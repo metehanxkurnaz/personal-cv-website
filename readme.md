@@ -1,3 +1,3 @@
-Kişisel CV Website Projesi
+Personal CV Website Project
 
 HTML CSS JavaScript
