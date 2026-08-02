@@ -4,56 +4,183 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Metehan Kurnaz</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header class="cv-header">
-        <div class="avatar-box">
-            <img src="avatar.jpg" class="avatar-img">
+    <aside class="sidebar">
+        <div class="profile-area">
+            <div class="avatar"></div>
+            <h1 class="name">Metehan Kurnaz</h1>
         </div>
-        <div class="info-box">
-            <h1>Metehan Kurnaz</h1>
-            <p>Developer</p>
-        </div>         
-    </header>
 
-    <section class="cv-section">
-        <div class="headers">
-            <h2>>hakkımda</h2>
-        </div>
-        <div class="text">
-            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised thanks to these sheets and more recently with desktop publishing software like Aldus PageMaker and Microsoft Word including versions of Lorem Ipsum.</p>
-        </div>
-    </section>
-    
-    <section class="cv-section">
-        <div class="headers">
-            <h2>>projelerim</h2>
-        </div>
-        <div class="text">
-            <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>
-        </div>
-    </section>
+        <nav class="nav-menu">
+            <div class="menu-item">
+                <a href="#about" class="menu-link"><i class="fa-regular fa-user"></i>Hakkımda</a>
+            </div>
 
-    <section class="cv-section">
-        <div class="headers">
-            <h2>>iletişim</h2>
+            <div class="menu-item has-dropdown">
+                <a href="#projects" class="menu-link"><i class="fa-regular fa-folder"></i>Projelerim</a>
+                
+                <div class="dropdown-content">
+                    <a href="#web-design">Web Tasarımı ve Geliştirme</a>
+                    <a href="#automation">Otomasyon Yazılımlar</a>
+                    <a href="#ai-integration">Yapay Zekâ Destekli Yazılımlar</a>
+                    <a href="#e-commerce">E-Ticaret</a>
+                    <a href="#game-development">Oyun Geliştirme</a>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <a href="#contact" class="menu-link"><i class="fa-regular fa-envelope"></i>İletişim</a>
+            </div>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <a href="#timeline" class="bottom-item">
+                <i class="fa-solid fa-clock-rotate-left"></i> Zaman Çizelgesi
+            </a>
+            
+            <div class="sidebar-divider"></div> 
+            
+            <a href="#stats" class="bottom-item">
+                <i class="fa-solid fa-chart-line"></i> İstatistikler
+            </a>
         </div>
-        <div class="text">
-            <p>The standard chunk of Lorem Ipsum used since 1966 is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.</p>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <div class="language">TR | EN</div>
+            <div class="last-update">Son Güncelleme: 02.08.2027</div>
+        </header>
+
+        <div class="home-page">
+            <div class="line-numbers"></div>
+
+            <div class="content">
+                <section id="about">
+                    <h2>Hakkımda</h2>
+                        <p>Dijital ekosisteme çeşitli platformlar için e-hizmet ve dijital ürün tedariki sağlayarak adım attım; bu süreçteki kazanımlarımla teknolojik altyapımı kurarak freelance dünyasında aktif bir kariyere yöneldim. Şu anda Bilgisayar Programcılığı alanında akademik eğitimime devam ederken bir yandan da yapay zeka destekli içerik otomasyonları, WordPress entegrasyonları, web tasarımı ve iş süreçlerini hızlandıran özel yazılım botları (otomasyon sistemleri) üzerine profesyonel çözümler geliştiriyorum. Yazılım ve otomasyon süreçlerine duyduğum tutkunun yanı sıra, e-ticaret dinamikleriyle, özellikle dijital ve fiziksel ürün satışı operasyonlarıyla da yakından ilgileniyorum. Mevcut dijital yetkinliklerimi sürekli olarak genişletirken, gelecekte sahip olduğum yenilikçi vizyonu oyun geliştirme sektörüne de taşımayı hedeflemekteyim.</p>
+                    <br>
+                </section>
+
+                <section id="projects">
+                    <h2>Projelerim</h2>
+                    <p>Aşağıda, fikir aşamasından tamamlanma sürecine kadar üzerinde çalıştığım tüm projelerimin güncel durumlarını listeliyorum. Tamamlanan projeleri buradan inceleyebilir ve edinebilirsiniz.</p>
+                    <br>
+                </section>
+
+                <section id="web-design">
+                    <h3>Web Tasarımı ve Geliştirme</h3>
+                    <div class="project-card">
+                        <div class="card-content">
+                            <div class="project-title">Web Site Kurulumu</div>
+                            <div class="project-status">
+                                <span class="status-dot green"></span>Yayınlandı
+                            </div>
+                        </div>
+                        <div class="card-logo">
+                            <i class="fa-brands fa-html5"></i>
+                        </div>
+                        <div class="card-acions">
+                            <button class="star-btn"><i class="fa-regular fa-star"></i>Yıldız</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="automation">
+                    <h3>Otomasyon Yazılımlar</h3>
+                    <div class="project-card">
+                        <div class="card-content">
+                            <div class="project-title">Otomatik Kayıt Uygulaması</div>
+                            <div class="project-status">
+                                <span class="status-dot yellow"></span>Geliştiriliyor
+                            </div>
+                        </div>
+                        <div class="card-logo">
+                            <i class="fa-brands fa-whmcs"></i>
+                        </div>
+                        <div class="card-acions">
+                            <button class="star-btn"><i class="fa-regular fa-star"></i>Yıldız</button>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="ai-integration">
+                    <h3>Yapay Zekâ Destekli Yazılımlar</h3>
+                    <div class="project-card">
+                        <div class="card-content">
+                            <div class="project-title">Wordpress Makale Botu</div>
+                            <div class="project-status">
+                                <span class="status-dot blue"></span>Planlandı
+                            </div>
+                        </div>
+                        <div class="card-logo">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div class="card-acions">
+                            <button class="star-btn"><i class="fa-regular fa-star"></i>Yıldız</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="e-commerce">
+                    <h3>E-Ticaret</h3>
+                    <div class="project-card">
+                        <div class="card-content">
+                            <div class="project-title">Steam Key Mağazası</div>
+                            <div class="project-status">
+                                <span class="status-dot red"></span>Durduruldu
+                            </div>
+                        </div>
+                        <div class="card-logo">
+                            <i class="fa-brands fa-steam"></i>
+                        </div>
+                        <div class="card-acions">
+                            <button class="star-btn"><i class="fa-regular fa-star"></i>Yıldız</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="game-development">
+                    <h3>Oyun Geliştirme</h3>
+                    <div class="project-card">
+                        <div class="card-content">
+                            <div class="project-title">Reborn PC Oyunu</div>
+                            <div class="project-status">
+                                <span class="status-dot green"></span>Yayınlandı
+                            </div>
+                        </div>
+                        <div class="card-logo">
+                            <i class="fa-solid fa-gamepad"></i>
+                        </div>
+                        <div class="card-acions">
+                            <button class="star-btn"><i class="fa-regular fa-star"></i>Yıldız</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="timeline">
+                    <h2>Zaman Çizelgesi</h2>
+                    <p>Geçmişten günümüze eğitim ve iş hayatı deneyimlerim burada yer alacak.</p>
+                    <br>
+                </section>
+
+                <section id="stats">
+                    <h2>İstatistikler</h2>
+                    <p>Kullandığım yazılım dilleri, teknolojiler ve yetkinlik seviyelerim...</p>
+                    <br>
+                </section>
+
+                <section id="contact">
+                    <h2>İletişim</h2>
+                    <p>Benimle iletişime geçmek için bana e-posta gönderebilir veya sosyal medya hesaplarımdan ulaşabilirsiniz.</p>
+                    <br>
+                </section>
+            </div>
         </div>
-    </section>
-    
-    <footer class="cv-footer">
-        <div class="social">
-            <a href="#" class="social-box">Twitter</a>
-            <a href="#" class="social-box">İnstagram</a>
-            <a href="#" class="social-box">Whatsapp</a>
-            <a href="#" class="social-box">GitHub</a>
-        </div>
-        <div class="signature">
-            <span>Metehan Kurnaz</span>
-        </div>
-    </footer>
+    </main> 
+    <script src="script.js"></script>
 </body>
 </html>
