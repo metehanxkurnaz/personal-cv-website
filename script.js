@@ -7,8 +7,6 @@ function updatelinenumbers() {
     const lineheight = 27;
     const contentheight = content.scrollHeight;
     
-    // YENİ EKLENEN KOD: Numaraların olduğu kutunun yüksekliğini içeriğin boyuna eşitler. 
-    // Böylece sağdaki çizgi sayfa ne kadar uzarsa o kadar uzar.
     linenumbers.style.height = contentheight + 'px';
 
     const alllines = Math.floor(contentheight / lineheight);
@@ -19,57 +17,8 @@ function updatelinenumbers() {
     }
 }
 
-function typeWriterEffect() {
-    const headings = Array.from(document.querySelectorAll('.content h2, .content h3'));
-    
-    function typeHeading(headingIndex) {
-        if (headingIndex >= headings.length) return;
-        
-        const heading = headings[headingIndex];
-        const originalText = heading.textContent;
-        heading.textContent = '';
-        
-        heading.style.display = 'inline-block';
-        heading.style.borderRight = '2px solid #7fdcfb';
-        heading.style.paddingRight = '5px';
-        
-        let charIndex = 0;
-        const speed = 80; 
-        let nextTriggered = false;
-        
-        function type() {
-            if (charIndex < originalText.length) {
-                heading.textContent += originalText.charAt(charIndex);
-                charIndex++;
-                updatelinenumbers();
-                
-                if (!nextTriggered && charIndex >= Math.floor(originalText.length * 0.75)) {
-                    typeHeading(headingIndex + 1);
-                    nextTriggered = true;
-                }
-                
-                setTimeout(type, speed);
-            } else {
-                heading.style.borderRight = 'none';
-                heading.style.display = 'block';
-                
-                if (!nextTriggered) {
-                    typeHeading(headingIndex + 1);
-                }
-            }
-        }
-        
-        type();
-    }
-    
-    if (headings.length > 0) {
-        typeHeading(0);
-    }
-}
-
 window.addEventListener('load', () => {
     updatelinenumbers();
-    typeWriterEffect();
 });
 
 window.addEventListener('resize', updatelinenumbers);
@@ -107,3 +56,76 @@ document.querySelectorAll('.sidebar a[href^="#"]').forEach(anchor => {
         }
     });
 });
+
+function updateActiveMenu() {
+    const sections = document.querySelectorAll('.content section');
+    const menuLinks = document.querySelectorAll('.sidebar a[href^="#"]');
+    const scrollContainer = document.querySelector('.home-page');
+    
+    if (!scrollContainer || sections.length === 0) return;
+
+    let currentId = '';
+    const scrollPosition = scrollContainer.scrollTop;
+    const containerOffset = scrollContainer.offsetTop;
+
+    const isAtBottom = Math.ceil(scrollPosition + scrollContainer.clientHeight) >= scrollContainer.scrollHeight - 25;
+
+    if (isAtBottom) {
+        currentId = sections[sections.length - 1].getAttribute('id');
+    } else {
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - containerOffset;
+            if (scrollPosition >= sectionTop - 100) {
+                currentId = section.getAttribute('id');
+            }
+        });
+    }
+
+    menuLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${currentId}`) {
+            link.classList.add('active');
+        }
+    });
+}
+
+const scrollContainer = document.querySelector('.home-page');
+if (scrollContainer) {
+    scrollContainer.addEventListener('scroll', updateActiveMenu);
+}
+
+window.addEventListener('load', updateActiveMenu);
+
+function startCounters() {
+    const counters = document.querySelectorAll('.stat-number');
+    
+    counters.forEach(counter => {
+        const target = +counter.getAttribute('data-target');
+        const increment = target / 70;
+        
+        function updateCount() {
+            const current = +counter.innerText;
+            
+            if (current < target) {
+                counter.innerText = Math.ceil(current + increment);
+                setTimeout(updateCount, 15);
+            } else {
+                counter.innerText = target;
+            }
+        }
+        updateCount();
+    });
+}
+
+
+const statsSection = document.querySelector('#stats');
+if (statsSection) {
+    const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+            startCounters();
+            observer.disconnect();
+        }
+    }, { threshold: 1 });
+    
+    observer.observe(statsSection);
+}

@@ -39,13 +39,15 @@ body {
 }
 
 .name {
-    font-size: 16px;
+    font-size: 21px;
     font-weight: 600;
     color: #ffffff;
 }
 
 .nav-menu {
     flex: 1;
+    position: relative;
+    padding-left: 0;
 }
 
 .menu-item {
@@ -55,85 +57,98 @@ body {
 .menu-link {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 20px;
+    padding: 10px 20px 10px 28px;
     color: #aaaaaa;
     text-decoration: none;
-    font-size: 15px;
+    font-size: 20px;
     cursor: pointer;
-    transition: all 0.2s;
+    position: relative;
+    transition: color 0.3s ease, transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-.menu-link i {
-    width: 16px;
-    font-size: 16px;
+.menu-link::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    background-color: #7fdcfb;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(127, 220, 251, 0.8);
+    transform: translateY(-50%) scale(0);
+    transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-.menu-item:hover .menu-link {
-    background-color: #2a2a2a;
+.menu-link:hover {
     color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.menu-link.active {
+    color: #7fdcfb;
+    font-weight: 600;
+    transform: translateX(6px);
+}
+
+.menu-link.active::before {
+    transform: translateY(-50%) scale(1);
 }
 
 .dropdown-content {
     max-height: 0;
     overflow: hidden;
-    background-color: #1e1e1e;
     opacity: 0;
-    transition: max-height 0.4s ease, opacity 0.4s ease, padding 0.4s ease;
+    transition: max-height 0.8s ease, opacity 0.8s ease;
     padding: 0;
+    margin-left: 15px;
 }
 
 .dropdown-content a {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 8px 20px 8px 48px;
-    color: #888;
+    padding: 8px 16px 8px 24px;
+    color: #888888;
     text-decoration: none;
-    font-size: 14px;
-    transition: color 0.2s, background-color 0.2s;
+    font-size: 13.5px;
+    position: relative;
+    transition: color 0.2s ease, transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.dropdown-content a::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    background-color: #7fdcfb;
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(127, 220, 251, 0.8);
+    transform: translateY(-50%) scale(0);
+    transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 .dropdown-content a:hover {
     color: #7fdcfb;
-    background-color: #222;
+    background-color: rgba(255, 255, 255, 0.02);
 }
 
-.has-dropdown:hover .dropdown-content {
-    max-height: 200px;
+.dropdown-content a.active {
+    color: #7fdcfb;
+    font-weight: 600;
+    transform: translateX(6px);
+}
+
+.dropdown-content a.active::before {
+    transform: translateY(-50%) scale(1);
+}
+
+.has-dropdown:hover .dropdown-content,
+.has-dropdown:has(.active) .dropdown-content {
+    max-height: 250px;
     opacity: 1;
-    padding: 6px 0;
-}
-
-.sidebar-bottom {
-    border-top: 1px solid #2b2b2b;
-    padding: 10px 0;
-}
-
-.sidebar-divider {
-    height: 1px;
-    background-color: #2b2b2b;
-    margin: 5px 20px;
-}
-
-.bottom-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    font-size: 14px;
-    color: #888;
-    cursor: pointer;
-    text-decoration: none;
-    transition: color 0.2s;
-}    
-
-.bottom-item i {
-    font-size: 10px;
-}
-
-.bottom-item:hover {
-    color: #ffffff;
+    padding: 4px 0;
 }
 
 .main-content {
@@ -154,11 +169,17 @@ body {
 }
 
 .home-page {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
     display: flex;
     flex: 1;
     padding: 20px 40px;
     overflow-y: auto;
     scroll-behavior: smooth;
+}
+
+.home-page::-webkit-scrollbar {
+    display: none;
 }
 
 .line-numbers {
@@ -189,6 +210,10 @@ body {
 
 .content h2, h3, h4 {
     margin-bottom: 10px;
+}
+
+.content h3 {
+    color: rgba(216, 245, 253, 0.342);
 }
 
 .project-card {
@@ -263,7 +288,7 @@ body {
     z-index: 1;
 }
 
-.star-btn {
+.like-btn {
     background: none;
     border: 1px solid #444;
     color: #888;
@@ -277,8 +302,170 @@ body {
     gap: 6px;
 }
 
-.star-btn:hover {
-    color: #ffd700;
-    border-color: #ffd700;
+.like-btn:hover {
+    color: #7fdcfb;
+    border-color: #7fdcfb;
     background-color: rgba(255, 215, 0, 0.01);
+}
+
+.stats-grid {
+    display: flex;
+    gap: 20px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+.stat-box {
+    flex: 1;
+    background-color: #252526;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 30px 20px;
+    text-align: center;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.stat-box:hover {
+    transform: translateY(-5px);
+}
+
+.stat-number {
+    font-size: 46px;
+    font-weight: 700;
+    color: #7fdcfb;
+    margin-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.stat-title {
+    font-size: 15px;
+    color: #aaaaaa;
+    font-weight: 500;
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.contact-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background-color: #252526;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 16px 20px;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.contact-icon {
+    width: 48px;
+    height: 48px;
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #aaaaaa;
+    transition: all 0.3s ease;
+}
+
+.r10-icon {
+    font-size: 16px;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: -0.5px;
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.contact-platform {
+    font-size: 15px;
+    font-weight: 600;
+    color: #d9d9d9;
+    margin-bottom: 3px;
+    transition: color 0.3s ease;
+}
+
+.contact-handle {
+    font-size: 13px;
+    color: #777777;
+    transition: color 0.3s ease;
+}
+
+.contact-card:hover {
+    transform: translateY(-5px);
+    border-color: #7fdcfb;
+    background-color: rgba(127, 220, 251, 0.03);
+}
+
+.contact-card:hover .contact-icon {
+    background-color: #7fdcfb;
+    color: #1e1e1e;
+    box-shadow: 0 0 15px rgba(127, 220, 251, 0.4);
+}
+
+.contact-card:hover .contact-platform {
+    color: #7fdcfb;
+}
+
+.contact-card:hover .contact-handle {
+    color: #aaaaaa;
+}
+
+.blue {
+    color: #7fdcfb;
+}
+
+.green {
+    color: #b6ce9f;
+}
+
+.orange {
+    color: #cc9066;
+}
+
+/* --- MODERN BAŞLIKLAR (Yorum Satırı Görünümü) --- */
+.content h2 {
+    font-family: 'JetBrains Mono', monospace; /* Teknik font */
+    font-size: 15px; /* Büyük ve kaba değil, normal metin boyutuna yakın */
+    font-weight: 400;
+    color: #6a9955; /* VS Code klasik yeşil yorum satırı rengi */
+    margin-bottom: 24px;
+    letter-spacing: 0.5px;
+    text-transform: lowercase; /* Kod hissiyatını artırmak için küçük harf */
+}
+
+/* h2'lerin başına otomatik // ekler */
+.content h2::before {
+    content: "// ";
+}
+
+/* Alt Başlıklar (Projelerim içindeki kategoriler vs.) */
+.content h3 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 400;
+    color: #808080; /* Daha soluk, gri bir yorum rengi */
+    margin-bottom: 16px;
+    text-transform: lowercase;
+}
+
+/* h3'leri HTML yorum satırı gibi gösterir: <!-- Başlık --> */
+.content h3::before {
+    content: "<!-- ";
+    color: #5c6370;
+}
+
+.content h3::after {
+    content: " -->";
+    color: #5c6370;
 }
