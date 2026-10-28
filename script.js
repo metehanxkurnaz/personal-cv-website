@@ -23,7 +23,7 @@ window.addEventListener('load', () => {
 
 window.addEventListener('resize', updatelinenumbers);
 
-document.querySelectorAll('.sidebar a[href^="#"]').forEach(anchor => {
+document.querySelectorAll('a[href^="#"]:not([href="#"])').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
         e.preventDefault();
         
@@ -57,45 +57,6 @@ document.querySelectorAll('.sidebar a[href^="#"]').forEach(anchor => {
     });
 });
 
-function updateActiveMenu() {
-    const sections = document.querySelectorAll('.content section');
-    const menuLinks = document.querySelectorAll('.sidebar a[href^="#"]');
-    const scrollContainer = document.querySelector('.home-page');
-    
-    if (!scrollContainer || sections.length === 0) return;
-
-    let currentId = '';
-    const scrollPosition = scrollContainer.scrollTop;
-    const containerOffset = scrollContainer.offsetTop;
-
-    const isAtBottom = Math.ceil(scrollPosition + scrollContainer.clientHeight) >= scrollContainer.scrollHeight - 25;
-
-    if (isAtBottom) {
-        currentId = sections[sections.length - 1].getAttribute('id');
-    } else {
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop - containerOffset;
-            if (scrollPosition >= sectionTop - 100) {
-                currentId = section.getAttribute('id');
-            }
-        });
-    }
-
-    menuLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === `#${currentId}`) {
-            link.classList.add('active');
-        }
-    });
-}
-
-const scrollContainer = document.querySelector('.home-page');
-if (scrollContainer) {
-    scrollContainer.addEventListener('scroll', updateActiveMenu);
-}
-
-window.addEventListener('load', updateActiveMenu);
-
 function startCounters() {
     const counters = document.querySelectorAll('.stat-number');
     
@@ -128,4 +89,71 @@ if (statsSection) {
     }, { threshold: 1 });
     
     observer.observe(statsSection);
+}
+
+const scrollContainer = document.querySelector('.home-page');
+const scrollbar = document.querySelector('.scrollbar');
+const scrollThumb = document.querySelector('.scrollbar-thumb');
+let scrollIdleTimer = null;
+
+function updateScrollbar() {
+    if (!scrollContainer || !scrollbar || !scrollThumb) return;
+
+    const visibleRatio = scrollContainer.clientHeight / scrollContainer.scrollHeight;
+    scrollbar.classList.toggle('is-hidden', visibleRatio >= 1);
+
+    const trackHeight = scrollbar.clientHeight;
+    const thumbHeight = Math.max(trackHeight * visibleRatio, 40);
+    const maxScroll = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+    const thumbTop = maxScroll > 0 ? (scrollContainer.scrollTop / maxScroll) * (trackHeight - thumbHeight) : 0;
+
+    scrollThumb.style.height = thumbHeight + 'px';
+    scrollThumb.style.transform = `translateY(${thumbTop}px)`;
+}
+
+if (scrollContainer && scrollbar && scrollThumb) {
+    scrollContainer.addEventListener('scroll', () => {
+        updateScrollbar();
+        scrollbar.classList.add('is-active');
+        clearTimeout(scrollIdleTimer);
+        scrollIdleTimer = setTimeout(() => scrollbar.classList.remove('is-active'), 800);
+    });
+
+    window.addEventListener('resize', updateScrollbar);
+    window.addEventListener('load', updateScrollbar);
+
+    // Çubuğu sürükleyerek kaydırma
+    scrollThumb.addEventListener('pointerdown', e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const startY = e.clientY;
+        const startScroll = scrollContainer.scrollTop;
+        const maxScroll = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+        const scrollPerPixel = maxScroll / (scrollbar.clientHeight - scrollThumb.offsetHeight);
+
+        scrollContainer.style.scrollBehavior = 'auto';
+        scrollThumb.setPointerCapture(e.pointerId);
+
+        function onMove(moveEvent) {
+            scrollContainer.scrollTop = startScroll + (moveEvent.clientY - startY) * scrollPerPixel;
+        }
+
+        function onUp() {
+            scrollContainer.style.scrollBehavior = '';
+            scrollThumb.removeEventListener('pointermove', onMove);
+            scrollThumb.removeEventListener('pointerup', onUp);
+        }
+
+        scrollThumb.addEventListener('pointermove', onMove);
+        scrollThumb.addEventListener('pointerup', onUp);
+    });
+
+    // Boş alana tıklayınca o noktaya git
+    scrollbar.addEventListener('pointerdown', e => {
+        const rect = scrollbar.getBoundingClientRect();
+        const clickRatio = (e.clientY - rect.top) / rect.height;
+        const maxScroll = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+        scrollContainer.scrollTo({ top: clickRatio * maxScroll, behavior: 'smooth' });
+    });
 }
