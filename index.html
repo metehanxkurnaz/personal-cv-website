@@ -8,35 +8,43 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <main class="main-content">
         <header class="top-bar">
-            <a href="#about" class="brand">
+            <a href="#home" class="brand">
                 <img src="logo.svg" alt="" class="brand-logo">
                 <span class="brand-name">Metehan Kurnaz</span>
             </a>
-            <div class="top-bar-info">
-                <div class="language">TR | EN</div>
-                <div class="last-update">Son Güncelleme: 02.08.2027</div>
-            </div>
+            <div class="last-update">Son Güncelleme: 02.08.2027</div>
         </header>
 
         <div class="home-page">
             <div class="line-numbers"></div>
 
             <div class="content">
-                <section id="about" class="hero">
+                <section id="home" class="hero">
                     <div class="hero-text">
-                        <h2>Hakkımda</h2>
-                        <p>Dijital ekosisteme çeşitli platformlar için <span class="blue">e-hizmet ve dijital ürün tedariki</span> sağlayarak adım attım; bu süreçteki kazanımlarımla teknolojik altyapımı kurarak <span class="orange">freelance</span> dünyasında aktif bir kariyere yöneldim. Şu anda <span class="green">Yazılım</span> alanında akademik eğitimime devam ederken bir yandan da <span class="orange">yapay zeka destekli içerik otomasyonları, WordPress entegrasyonları, web tasarımı ve iş süreçlerini hızlandıran özel yazılım botları (otomasyon sistemleri)</span> üzerine profesyonel çözümler geliştiriyorum. Yazılım ve otomasyon süreçlerine duyduğum tutkunun yanı sıra, e-ticaret dinamikleriyle, özellikle <span class="blue">dijital ve fiziksel ürün</span> satışı operasyonlarıyla da yakından ilgileniyorum. Mevcut dijital yetkinliklerimi sürekli olarak genişletirken, bu vizyonumu <span class="green">oyun geliştirme</span> sektörüne de taşımayı hedeflemekteyim.</p>
+                        <h1 class="hero-title">Dijital çözümler ve akıllı otomasyonlar<span class="blue">.</span></h1>
+                        <p class="hero-subtitle">Web tasarım, yapay zeka entegrasyonları ve e-ticaret odaklı projelerle manuel işleri koda dönüştürüyor, dijital altyapınızı güçlendiriyorum.</p>
+
+                        <a href="#contact" class="contact-card hero-cta">
+                            <div class="contact-icon"><i class="fa-solid fa-paper-plane"></i></div>
+                            <span class="contact-platform">İletişime Geç</span>
+                            <i class="fa-solid fa-arrow-right cta-arrow"></i>
+                        </a>
                     </div>
 
-                    <a href="#projects" class="scroll-arrow" aria-label="Aşağı kaydır">
+                    <a href="#about" class="scroll-arrow" aria-label="Aşağı kaydır">
                         <i class="fa-solid fa-caret-down"></i>
                     </a>
+                </section>
+
+                <section id="about">
+                    <h2>Hakkımda</h2>
+                    <p>Dijital ekosisteme çeşitli platformlar için <span class="blue">e-hizmet ve dijital ürün tedariki</span> sağlayarak adım attım; bu süreçteki kazanımlarımla teknolojik altyapımı kurarak <span class="orange">freelance</span> dünyasında aktif bir kariyere yöneldim. Şu anda <span class="green">Yazılım</span> alanında akademik eğitimime devam ederken bir yandan da <span class="orange">Website tasarımı, yapay zeka entegrasyonları,  ve iş süreçlerini hızlandıran özel otomasyonlar</span> üzerine profesyonel çözümler geliştiriyorum. Yazılım ve otomasyon süreçlerine duyduğum tutkunun yanı sıra, e-ticaret dinamikleriyle, özellikle <span class="blue">dijital ve fiziksel ürün</span> satışı operasyonlarıyla da yakından ilgileniyorum. Mevcut dijital yetkinliklerimi sürekli olarak genişletirken, bu vizyonumu <span class="green">oyun geliştirme</span> sektörüne de taşımayı hedeflemekteyim.</p>
                 </section>
 
                 <section id="projects">
@@ -46,97 +54,32 @@
 
                 <section id="web-design">
                     <h3>Web Tasarımı ve Geliştirme</h3>
-                    <div class="project-card">
-                        <div class="card-content">
-                            <div class="project-title">Örnek Uygulama</div>
-                            <div class="project-status">
-                                <span class="status-dot green"></span>Yayınlandı
-                            </div>
-                        </div>
-                        <div class="card-logo">
-                            <i class="fa-brands fa-html5"></i>
-                        </div>
-                        <div class="card-acions">
-                            <button class="like-btn"><i class="fa-regular fa-thumbs-up"></i>Beğen</button>
-                        </div>
-                    </div>
+                    <div class="project-grid" data-category="web-design"></div>
                 </section>
 
                 <section id="automation">
                     <h3>Otomasyon Yazılımlar</h3>
-                    <div class="project-card">
-                        <div class="card-content">
-                            <div class="project-title">Örnek Uygulama</div>
-                            <div class="project-status">
-                                <span class="status-dot yellow"></span>Geliştiriliyor
-                            </div>
-                        </div>
-                        <div class="card-logo">
-                            <i class="fa-brands fa-whmcs"></i>
-                        </div>
-                        <div class="card-acions">
-                            <button class="like-btn"><i class="fa-regular fa-thumbs-up"></i>Beğen</button>
-                        </div>
-                    </div>
+                    <div class="project-grid" data-category="automation"></div>
                 </section>
-                
+
                 <section id="ai-integration">
                     <h3>AI Destekli Yazılımlar</h3>
-                    <div class="project-card">
-                        <div class="card-content">
-                            <div class="project-title">Örnek Uygulama</div>
-                            <div class="project-status">
-                                <span class="status-dot blue"></span>Planlandı
-                            </div>
-                        </div>
-                        <div class="card-logo">
-                            <i class="fa-solid fa-robot"></i>
-                        </div>
-                        <div class="card-acions">
-                            <button class="like-btn"><i class="fa-regular fa-thumbs-up"></i>Beğen</button>
-                        </div>
-                    </div>
+                    <div class="project-grid" data-category="ai-integration"></div>
                 </section>
 
                 <section id="e-commerce">
                     <h3>E-Ticaret</h3>
-                    <div class="project-card">
-                        <div class="card-content">
-                            <div class="project-title">Örnek Uygulama</div>
-                            <div class="project-status">
-                                <span class="status-dot red"></span>Durduruldu
-                            </div>
-                        </div>
-                        <div class="card-logo">
-                            <i class="fa-brands fa-steam"></i>
-                        </div>
-                        <div class="card-acions">
-                            <button class="like-btn"><i class="fa-regular fa-thumbs-up"></i>Beğen</button>
-                        </div>
-                    </div>
+                    <div class="project-grid" data-category="e-commerce"></div>
                 </section>
 
                 <section id="game-development">
                     <h3>Oyun Geliştirme</h3>
-                    <div class="project-card">
-                        <div class="card-content">
-                            <div class="project-title">Örnek Uygulama</div>
-                            <div class="project-status">
-                                <span class="status-dot green"></span>Yayınlandı
-                            </div>
-                        </div>
-                        <div class="card-logo">
-                            <i class="fa-solid fa-gamepad"></i>
-                        </div>
-                        <div class="card-acions">
-                            <button class="like-btn"><i class="fa-regular fa-thumbs-up"></i>Beğen</button>
-                        </div>
-                    </div>
+                    <div class="project-grid" data-category="game-development"></div>
                 </section>
 
                 <section id="stats">
                     <h2>İstatistikler</h2>
-                    <div class="stats-grid">
+                    <div class="stats-grid is-locked">
                         <div class="stat-box">
                             <div class="stat-number" data-target="100">0</div>
                             <div class="stat-title">Ürün & Hizmet</div>
@@ -149,27 +92,28 @@
                             <div class="stat-number" data-target="300">0</div>
                             <div class="stat-title">Oyun İndirmesi</div>
                         </div>
+                        <div class="locked-overlay">Yükleniyor...</div>
                     </div>
                 </section>
 
                 <section id="contact">
-<h2>İletişim</h2>
+                    <h2>İletişim</h2>
                     <p>Projelerim hakkında görüşmek, işbirliği yapmak veya sadece iletişim kurmak için aşağıdaki platformları kullanabilirsiniz.</p>
-                    
+
                     <div class="contact-grid">
-                        <a href="#" class="contact-card" target="_blank">
+                        <a href="https://github.com/metehanxkurnaz" class="contact-card" target="_blank" rel="noopener">
                             <div class="contact-icon"><i class="fa-brands fa-github"></i></div>
                             <div class="contact-info">
                                 <span class="contact-platform">GitHub</span>
-                                <span class="contact-handle">@kullaniciadiniz</span>
+                                <span class="contact-handle">@metehanxkurnaz</span>
                             </div>
                         </a>
-                        
-                        <a href="#" class="contact-card" target="_blank">
+
+                        <a href="https://www.r10.net/profil/174089-metehanz.html" class="contact-card" target="_blank" rel="noopener">
                             <div class="contact-icon"><span class="r10-icon">R10</span></div>
                             <div class="contact-info">
                                 <span class="contact-platform">R10.net</span>
-                                <span class="contact-handle">Profiliniz</span>
+                                <span class="contact-handle">@metehanz</span>
                             </div>
                         </a>
 
@@ -181,7 +125,7 @@
                             </div>
                         </a>
 
-                        <a href="#" class="contact-card" target="_blank">
+                        <a href="https://wa.me/905418353916" class="contact-card" target="_blank" rel="noopener">
                             <div class="contact-icon"><i class="fa-brands fa-whatsapp"></i></div>
                             <div class="contact-info">
                                 <span class="contact-platform">WhatsApp</span>
@@ -189,11 +133,11 @@
                             </div>
                         </a>
 
-                        <a href="#" class="contact-card" target="_blank">
+                        <a href="https://www.instagram.com/metehanxkurnaz" class="contact-card" target="_blank" rel="noopener">
                             <div class="contact-icon"><i class="fa-brands fa-instagram"></i></div>
                             <div class="contact-info">
                                 <span class="contact-platform">Instagram</span>
-                                <span class="contact-handle">@kullaniciadiniz</span>
+                                <span class="contact-handle">@metehanxkurnaz</span>
                             </div>
                         </a>
                     </div>
@@ -206,6 +150,19 @@
         <div class="scrollbar-thumb"></div>
     </div>
 
+    <div class="modal" hidden>
+        <div class="modal-backdrop"></div>
+        <div class="modal-window" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <div class="modal-header">
+                <button class="modal-btn modal-back" aria-label="Geri"><i class="fa-solid fa-arrow-left"></i></button>
+                <span class="modal-title" id="modal-title"></span>
+                <button class="modal-btn modal-close" aria-label="Kapat"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body"></div>
+        </div>
+    </div>
+
+    <script src="projects.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

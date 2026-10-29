@@ -10,18 +10,15 @@ body {
     background-color: #1e1e1e;
     color: #d9d9d9;
     height: 100vh;
+    height: 100dvh;
     overflow: hidden;
 }
 
-/* Arka plandaki büyük logo: M.png beyaz zeminli olduğu için renkleri
-   ters çevrilip "screen" ile karıştırılıyor, böylece sadece logo hafif gri görünüyor */
 body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background: url('M.png') center / min(1300px, 95vw) no-repeat;
-    filter: invert(1);
-    mix-blend-mode: screen;
+    background: url('M-bg.png') center / min(1300px, 95vw) no-repeat;
     opacity: 0.035;
     pointer-events: none;
 }
@@ -44,11 +41,6 @@ body::before {
     color: #888;
 }
 
-.top-bar-info {
-    display: flex;
-    gap: 24px;
-}
-
 .brand {
     display: flex;
     align-items: center;
@@ -68,8 +60,6 @@ body::before {
 }
 
 .home-page {
-    position: relative;
-    -ms-overflow-style: none;
     scrollbar-width: none;
     display: flex;
     flex: 1;
@@ -86,8 +76,8 @@ body::before {
     display: flex;
     flex-direction: column;
     text-align: right;
-    min-width: 15px; 
-    padding-right: 20px; 
+    min-width: 15px;
+    padding-right: 20px;
     border-right: 1px solid #2b2b2b;
     color: #5a5a5a;
     font-family: 'Courier New', Courier, monospace;
@@ -104,14 +94,15 @@ body::before {
 }
 
 .content p {
-    font-size: 15px;
+    font-size: 20px;
     line-height: 1.8;
     margin-bottom: 24px;
     color: #d9d9d9;
-    max-width: 760px;
+    max-width: 1440px;
+    text-align: justify;
 }
 
-/* --- BÖLÜM ARALARI --- */
+#about,
 #projects,
 #stats,
 #contact {
@@ -130,27 +121,55 @@ body::before {
     padding-bottom: 140px;
 }
 
-/* --- GİRİŞ EKRANI (Hakkımda) --- */
 .hero {
     position: relative;
     display: flex;
     align-items: center;
+    justify-content: center;
     min-height: calc(100vh - 100px);
+    min-height: calc(100dvh - 100px);
+    padding-bottom: 60px;
+    text-align: center;
 }
 
-.content .hero h2 {
+.hero-title {
+    font-size: 56px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    color: #ffffff;
+    margin-bottom: 24px;
+}
+
+.content .hero-subtitle {
     font-size: 20px;
-    margin-bottom: 32px;
+    line-height: 1.7;
+    color: #aaaaaa;
+    max-width: 720px;
+    margin: 0 auto 48px;
+    text-align-last: center;
 }
 
-.content .hero p {
-    font-size: 20px;
-    line-height: 1.8;
-    margin-bottom: 320px;
-    max-width: 1440px;
+.contact-card.hero-cta {
+    display: inline-flex;
+    padding-right: 28px;
 }
 
-/* İlk ekranın altında, ortada zıplayan ok */
+.hero-cta .contact-platform {
+    margin-bottom: 0;
+}
+
+.cta-arrow {
+    margin-left: 12px;
+    color: #555555;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.hero-cta:hover .cta-arrow {
+    color: #7fdcfb;
+    transform: translateX(4px);
+}
+
 .scroll-arrow {
     position: absolute;
     left: 50%;
@@ -160,11 +179,6 @@ body::before {
     font-size: 30px;
     color: #7fdcfb;
     text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.scroll-arrow:hover {
-    color: #7fdcfb;
 }
 
 .scroll-arrow i {
@@ -172,7 +186,6 @@ body::before {
     animation: arrow-bounce 2.8s ease-in-out infinite;
 }
 
-/* İki kısa zıplama, ardından duraksama */
 @keyframes arrow-bounce {
     0%   { transform: translateY(0); }
     7%   { transform: translateY(-12px); }
@@ -182,7 +195,6 @@ body::before {
     100% { transform: translateY(0); }
 }
 
-/* --- ÖZEL KAYDIRMA ÇUBUĞU --- */
 .scrollbar {
     position: fixed;
     top: 24px;
@@ -229,56 +241,66 @@ body::before {
     display: none;
 }
 
-@media (max-width: 900px) {
-    .top-bar,
-    .home-page {
-        padding-left: 16px;
-        padding-right: 16px;
-    }
-
-    .last-update,
-    .line-numbers {
-        display: none;
-    }
-
-    .content {
-        padding-left: 0;
-    }
-
-    .content {
-        padding-right: 0;
-    }
-
-    .stats-grid {
-        flex-direction: column;
-    }
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
 }
 
-.content h2, h3, h4 {
-    margin-bottom: 10px;
+.is-locked {
+    position: relative;
 }
 
-.content h3 {
-    color: rgba(216, 245, 253, 0.342);
+.locked-overlay {
+    position: absolute;
+    inset: -6px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(37, 37, 38, 0.85);
+    backdrop-filter: blur(4px);
+    border: 1px solid #3c3c3c;
+    border-radius: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    letter-spacing: 1px;
+    color: #d9d9d9;
+    cursor: not-allowed;
 }
 
 .project-card {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     background-color: #252526;
     border: 1px solid #333;
     border-radius: 12px;
     padding: 20px;
-    margin-bottom: 20px;
     position: relative;
     overflow: hidden;
     cursor: pointer;
-    transition: transform 0.2s border-color 0.2s;
+    transition: transform 0.2s, border-color 0.2s;
 }
 
 .project-card:hover {
     transform: translateY(-2px);
+}
+
+.more-card {
+    justify-content: center;
+    gap: 12px;
+    color: #888888;
+    font-size: 18px;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.more-card:hover {
+    transform: translateY(-5px);
+    color: #7fdcfb;
+    border-color: #7fdcfb;
+    background-color: rgba(127, 220, 251, 0.03);
 }
 
 .card-content {
@@ -351,7 +373,12 @@ body::before {
 .like-btn:hover {
     color: #7fdcfb;
     border-color: #7fdcfb;
-    background-color: rgba(255, 215, 0, 0.01);
+}
+
+.like-btn.is-liked {
+    color: #1e1e1e;
+    border-color: #7fdcfb;
+    background-color: #7fdcfb;
 }
 
 .stats-grid {
@@ -479,39 +506,574 @@ body::before {
     color: #cc9066;
 }
 
-/* --- MODERN BAŞLIKLAR (Yorum Satırı Görünümü) --- */
 .content h2 {
-    font-family: 'JetBrains Mono', monospace; /* Teknik font */
-    font-size: 15px; /* Büyük ve kaba değil, normal metin boyutuna yakın */
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
     font-weight: 400;
-    color: #6a9955; /* VS Code klasik yeşil yorum satırı rengi */
-    margin-bottom: 24px;
+    color: #6a9955;
+    margin-bottom: 32px;
     letter-spacing: 0.5px;
-    text-transform: lowercase; /* Kod hissiyatını artırmak için küçük harf */
+    text-transform: lowercase;
 }
 
-/* h2'lerin başına otomatik // ekler */
 .content h2::before {
     content: "// ";
 }
 
-/* Alt Başlıklar (Projelerim içindeki kategoriler vs.) */
 .content h3 {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    font-weight: 400;
-    color: #808080; /* Daha soluk, gri bir yorum rengi */
+    font-size: 20px;
+    font-weight: 600;
+    color: #cc9066;
     margin-bottom: 16px;
     text-transform: lowercase;
 }
 
-/* h3'leri HTML yorum satırı gibi gösterir: <!-- Başlık --> */
 .content h3::before {
-    content: "<!-- ";
-    color: #5c6370;
+    content: "> ";
 }
 
-.content h3::after {
-    content: " -->";
-    color: #5c6370;
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal[hidden] {
+    display: none;
+}
+
+.modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(10, 10, 10, 0.8);
+    animation: modal-fade 0.2s ease-out;
+}
+
+.modal-window {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: min(1180px, 92vw);
+    height: min(880px, 88vh);
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    animation: modal-rise 0.22s ease-out;
+    will-change: transform, opacity;
+}
+
+@keyframes modal-fade {
+    from { opacity: 0; }
+}
+
+@keyframes modal-rise {
+    from { opacity: 0; transform: translateY(16px); }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 18px;
+    border-bottom: 1px solid #2b2b2b;
+}
+
+.modal-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: #808080;
+    text-transform: lowercase;
+}
+
+.modal-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #252526;
+    border: 1px solid #333;
+    border-radius: 10px;
+    color: #aaaaaa;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modal-btn:hover {
+    color: #7fdcfb;
+    border-color: #7fdcfb;
+}
+
+.modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 36px 44px 48px;
+    scrollbar-width: thin;
+    scrollbar-color: #3c3c3c transparent;
+}
+
+.modal-body p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #d9d9d9;
+    text-align: justify;
+    margin-bottom: 16px;
+}
+
+.modal-heading {
+    font-size: 26px;
+    font-weight: 600;
+    color: #cc9066;
+    text-transform: lowercase;
+    margin-bottom: 8px;
+}
+
+.modal-heading::before {
+    content: "> ";
+}
+
+.modal-body .modal-subheading {
+    color: #808080;
+    margin-bottom: 28px;
+}
+
+.product-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: 44px;
+}
+
+.gallery-main {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background-color: #252526;
+    border: 1px solid #333;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.gallery-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+
+.gallery-slide.is-active {
+    opacity: 1;
+}
+
+.gallery-slide img,
+.gallery-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.gallery-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: linear-gradient(135deg, #252526, #2d2d30);
+    color: #5a5a5a;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+}
+
+.gallery-placeholder i {
+    font-size: 96px;
+    color: rgba(127, 220, 251, 0.2);
+}
+
+.gallery-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid #3c3c3c;
+    background-color: rgba(30, 30, 30, 0.75);
+    color: #aaaaaa;
+    cursor: pointer;
+    z-index: 1;
+    transition: all 0.2s;
+}
+
+.gallery-nav.prev { left: 12px; }
+.gallery-nav.next { right: 12px; }
+
+.gallery-nav:hover {
+    color: #7fdcfb;
+    border-color: #7fdcfb;
+}
+
+.gallery-thumbs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.gallery-thumb {
+    aspect-ratio: 16 / 10;
+    padding: 0;
+    background: none;
+    border: 1px solid #333;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    opacity: 0.55;
+    transition: all 0.2s;
+}
+
+.gallery-thumb .gallery-placeholder {
+    font-size: 0;
+    gap: 0;
+}
+
+.gallery-thumb .gallery-placeholder i {
+    font-size: 24px;
+}
+
+.gallery-thumb:hover,
+.gallery-thumb.is-active {
+    opacity: 1;
+    border-color: #7fdcfb;
+}
+
+.product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.product-category {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: #cc9066;
+    text-transform: lowercase;
+}
+
+.product-category::before {
+    content: "> ";
+}
+
+.product-title {
+    font-size: 34px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.2;
+}
+
+.modal-body .product-summary {
+    color: #aaaaaa;
+    margin-bottom: 0;
+}
+
+.product-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 15px;
+    color: #d9d9d9;
+}
+
+.product-features i {
+    color: #7fdcfb;
+    margin-right: 10px;
+}
+
+.product-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.quote-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background-color: rgba(127, 220, 251, 0.08);
+    border: 1px solid #7fdcfb;
+    border-radius: 10px;
+    color: #7fdcfb;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.quote-btn:hover {
+    background-color: #7fdcfb;
+    color: #1e1e1e;
+    box-shadow: 0 0 18px rgba(127, 220, 251, 0.4);
+}
+
+.like-btn.like-btn-large {
+    padding: 14px 22px;
+    border-radius: 10px;
+    font-size: 15px;
+}
+
+.product-section {
+    margin-top: 56px;
+}
+
+.modal-section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    font-weight: 400;
+    color: #6a9955;
+    text-transform: lowercase;
+    margin-bottom: 20px;
+}
+
+.modal-section-title::before {
+    content: "// ";
+}
+
+@media (pointer: coarse) {
+    .scrollbar {
+        display: none;
+    }
+}
+
+@media (max-width: 1200px) {
+    .content {
+        padding: 0 40px;
+    }
+
+    .hero-title {
+        font-size: 48px;
+    }
+}
+
+@media (max-width: 900px) {
+    .top-bar {
+        padding: 14px 24px;
+    }
+
+    .home-page {
+        padding: 16px 32px;
+    }
+
+    .last-update,
+    .line-numbers {
+        display: none;
+    }
+
+    .content {
+        padding: 0;
+    }
+
+    .hero-title {
+        font-size: 40px;
+    }
+
+    .content .hero-subtitle,
+    .content p {
+        font-size: 18px;
+    }
+
+    #about,
+    #projects,
+    #stats,
+    #contact {
+        padding-top: 100px;
+    }
+
+    #contact {
+        padding-bottom: 100px;
+    }
+
+    .modal-window {
+        width: 94vw;
+        height: 90vh;
+        height: 90dvh;
+    }
+
+    .modal-body {
+        padding: 28px 28px 40px;
+    }
+
+    .product-top {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
+}
+
+@media (max-width: 600px) {
+    .top-bar {
+        padding: 12px 24px;
+    }
+
+    .home-page {
+        padding: 12px 24px;
+    }
+
+    .brand {
+        gap: 12px;
+    }
+
+    .brand-logo {
+        height: 22px;
+    }
+
+    .brand-name {
+        font-size: 15px;
+    }
+
+    .hero-title {
+        font-size: 32px;
+        letter-spacing: 0;
+    }
+
+    .content .hero-subtitle {
+        font-size: 16px;
+        margin-bottom: 36px;
+        text-align: center;
+    }
+
+    .content p {
+        font-size: 16px;
+    }
+
+    .content h2 {
+        font-size: 17px;
+        margin-bottom: 20px;
+    }
+
+    .content h3 {
+        font-size: 17px;
+    }
+
+    #about,
+    #projects,
+    #stats,
+    #contact {
+        padding-top: 72px;
+    }
+
+    #contact {
+        padding-bottom: 72px;
+    }
+
+    #web-design,
+    #automation,
+    #ai-integration,
+    #e-commerce,
+    #game-development {
+        margin-top: 32px;
+    }
+
+    .project-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .project-grid.is-locked > .project-card:nth-child(n + 3) {
+        display: none;
+    }
+
+    .project-card {
+        padding: 16px;
+    }
+
+    .project-title {
+        font-size: 16px;
+    }
+
+    .card-logo {
+        font-size: 100px;
+    }
+
+    .locked-overlay {
+        font-size: 16px;
+    }
+
+    .stats-grid {
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .stat-box {
+        padding: 22px 16px;
+    }
+
+    .stat-number {
+        font-size: 38px;
+    }
+
+    .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .modal-window {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        border: none;
+        border-radius: 0;
+    }
+
+    .modal-header {
+        padding: 10px 12px;
+    }
+
+    .modal-title {
+        font-size: 12px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .modal-body {
+        padding: 20px 24px 32px;
+    }
+
+    .modal-heading {
+        font-size: 21px;
+    }
+
+    .product-title {
+        font-size: 26px;
+    }
+
+    .gallery-placeholder i {
+        font-size: 64px;
+    }
+
+    .gallery-thumbs {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .product-actions {
+        flex-wrap: wrap;
+    }
+
+    .modal-body p {
+        font-size: 15px;
+    }
+
+    .product-section {
+        margin-top: 40px;
+    }
 }
