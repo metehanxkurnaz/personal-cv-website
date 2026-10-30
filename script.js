@@ -4,7 +4,7 @@ function updatelinenumbers() {
 
     if (!content || !linenumbers) return;
 
-    const lineheight = 27;
+    const lineheight = parseFloat(getComputedStyle(linenumbers).lineHeight);
     const contentheight = content.scrollHeight;
     const alllines = Math.floor(contentheight / lineheight);
 

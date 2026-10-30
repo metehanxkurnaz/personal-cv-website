@@ -32,7 +32,7 @@ const CATEGORIES = [
     {
         id: 'web-design',
         title: 'Web Tasarımı ve Geliştirme',
-        //locked: true,
+        locked: true,
         projects: [
             sampleProject('web-design-1', 'Örnek Uygulama 1', 'fa-brands fa-html5', 'published'),
             sampleProject('web-design-2', 'Örnek Uygulama 2', 'fa-brands fa-wordpress', 'development'),
