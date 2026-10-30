@@ -1,265 +1,205 @@
-function updatelinenumbers() {
-    const content = document.querySelector('.content');
-    const linenumbers = document.querySelector('.line-numbers');
-
-    if (!content || !linenumbers) return;
-
-    const lineheight = parseFloat(getComputedStyle(linenumbers).lineHeight);
-    const contentheight = content.scrollHeight;
-    const alllines = Math.floor(contentheight / lineheight);
-
-    linenumbers.style.height = contentheight + 'px';
-    linenumbers.innerHTML = Array.from({ length: alllines }, (_, i) => i + 1).join('<br>');
-}
-
-window.addEventListener('load', updatelinenumbers);
-window.addEventListener('resize', updatelinenumbers);
-
-document.querySelectorAll('a[href^="#"]:not([href="#"])').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
-        e.preventDefault();
-
-        const targetElement = document.querySelector(this.getAttribute('href'));
-
-        if (targetElement) {
-            const startPosition = scrollContainer.scrollTop;
-            const targetPosition = targetElement.getBoundingClientRect().top + scrollContainer.scrollTop - scrollContainer.getBoundingClientRect().top;
-            const distance = targetPosition - startPosition;
-            const duration = 600;
-            let start = null;
-
-            function animation(currentTime) {
-                if (start === null) start = currentTime;
-                const timeElapsed = currentTime - start;
-
-                const progress = Math.min(timeElapsed / duration, 1);
-                const ease = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
-
-                scrollContainer.scrollTop = startPosition + distance * ease;
-
-                if (timeElapsed < duration) {
-                    window.requestAnimationFrame(animation);
-                }
-            }
-
-            window.requestAnimationFrame(animation);
-        }
-    });
-});
-
-function startCounters() {
-    const counters = document.querySelectorAll('.stat-number');
-
-    counters.forEach(counter => {
-        const target = +counter.getAttribute('data-target');
-        const increment = target / 70;
-
-        function updateCount() {
-            const current = +counter.innerText;
-
-            if (current < target) {
-                counter.innerText = Math.ceil(current + increment);
-                setTimeout(updateCount, 15);
-            } else {
-                counter.innerText = target;
-            }
-        }
-        updateCount();
-    });
-}
-
-const statsSection = document.querySelector('#stats');
-if (statsSection) {
-    const observer = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-            startCounters();
-            observer.disconnect();
-        }
-    }, { threshold: 1 });
-
-    observer.observe(statsSection);
-}
-
 const scrollContainer = document.querySelector('.home-page');
+const content = document.querySelector('.content');
+const lineNumbers = document.querySelector('.line-numbers');
 const scrollbar = document.querySelector('.scrollbar');
 const scrollThumb = document.querySelector('.scrollbar-thumb');
-let scrollIdleTimer = null;
+let scrollIdleTimer;
+
+function maxScroll() {
+    return scrollContainer.scrollHeight - scrollContainer.clientHeight;
+}
+
+function updateLineNumbers() {
+    const lineHeight = parseFloat(getComputedStyle(lineNumbers).lineHeight);
+    const lines = Math.floor(content.scrollHeight / lineHeight);
+
+    lineNumbers.style.height = content.scrollHeight + 'px';
+    lineNumbers.innerHTML = Array.from({ length: lines }, (_, i) => i + 1).join('<br>');
+}
 
 function updateScrollbar() {
-    if (!scrollContainer || !scrollbar || !scrollThumb) return;
-
     const visibleRatio = scrollContainer.clientHeight / scrollContainer.scrollHeight;
-    scrollbar.classList.toggle('is-hidden', visibleRatio >= 1);
-
     const trackHeight = scrollbar.clientHeight;
     const thumbHeight = Math.max(trackHeight * visibleRatio, 40);
-    const maxScroll = scrollContainer.scrollHeight - scrollContainer.clientHeight;
-    const thumbTop = maxScroll > 0 ? (scrollContainer.scrollTop / maxScroll) * (trackHeight - thumbHeight) : 0;
+    const thumbTop = scrollContainer.scrollTop / maxScroll() * (trackHeight - thumbHeight) || 0;
 
+    scrollbar.classList.toggle('is-hidden', visibleRatio >= 1);
     scrollThumb.style.height = thumbHeight + 'px';
     scrollThumb.style.transform = `translateY(${thumbTop}px)`;
 }
 
-if (scrollContainer && scrollbar && scrollThumb) {
-    scrollContainer.addEventListener('scroll', () => {
-        updateScrollbar();
-        scrollbar.classList.add('is-active');
-        clearTimeout(scrollIdleTimer);
-        scrollIdleTimer = setTimeout(() => scrollbar.classList.remove('is-active'), 800);
-    });
+function updateLayout() {
+    updateLineNumbers();
+    updateScrollbar();
+}
 
-    window.addEventListener('resize', updateScrollbar);
-    window.addEventListener('load', updateScrollbar);
+function smoothScrollTo(target) {
+    const start = scrollContainer.scrollTop;
+    const offset = target.getBoundingClientRect().top - scrollContainer.getBoundingClientRect().top;
+    const end = Math.min(start + offset, maxScroll());
+    const duration = Math.min(1100, 450 + Math.abs(end - start) / 4);
+    let startTime;
 
-    scrollThumb.addEventListener('pointerdown', e => {
-        e.preventDefault();
-        e.stopPropagation();
+    scrollContainer.style.scrollBehavior = 'auto';
+    requestAnimationFrame(function step(now) {
+        startTime ??= now;
+        const progress = Math.min((now - startTime) / duration, 1);
+        const ease = progress < 0.5 ? 4 * progress ** 3 : 1 - (2 - 2 * progress) ** 3 / 2;
 
-        const startY = e.clientY;
-        const startScroll = scrollContainer.scrollTop;
-        const maxScroll = scrollContainer.scrollHeight - scrollContainer.clientHeight;
-        const scrollPerPixel = maxScroll / (scrollbar.clientHeight - scrollThumb.offsetHeight);
+        scrollContainer.scrollTop = start + (end - start) * ease;
 
-        scrollContainer.style.scrollBehavior = 'auto';
-        scrollThumb.setPointerCapture(e.pointerId);
-
-        function onMove(moveEvent) {
-            scrollContainer.scrollTop = startScroll + (moveEvent.clientY - startY) * scrollPerPixel;
-        }
-
-        function onUp() {
-            scrollContainer.style.scrollBehavior = '';
-            scrollThumb.removeEventListener('pointermove', onMove);
-            scrollThumb.removeEventListener('pointerup', onUp);
-        }
-
-        scrollThumb.addEventListener('pointermove', onMove);
-        scrollThumb.addEventListener('pointerup', onUp);
-    });
-
-    scrollbar.addEventListener('pointerdown', e => {
-        const rect = scrollbar.getBoundingClientRect();
-        const clickRatio = (e.clientY - rect.top) / rect.height;
-        const maxScroll = scrollContainer.scrollHeight - scrollContainer.clientHeight;
-        scrollContainer.scrollTo({ top: clickRatio * maxScroll, behavior: 'smooth' });
+        if (progress < 1) requestAnimationFrame(step);
+        else scrollContainer.style.scrollBehavior = '';
     });
 }
 
-function findProject(projectId) {
-    for (const category of CATEGORIES) {
-        const project = category.projects.find(p => p.id === projectId);
-        if (project) return { project, category };
-    }
-    return null;
-}
-
-const likedProjects = new Set();
-
-CATEGORIES.forEach(category => category.projects.forEach(project => {
-    try {
-        if (localStorage.getItem(`like-${project.id}`) === '1') likedProjects.add(project.id);
-    } catch (e) {}
+document.querySelectorAll('a[href^="#"]:not([href="#"])').forEach(link => link.addEventListener('click', e => {
+    e.preventDefault();
+    smoothScrollTo(document.querySelector(link.getAttribute('href')));
 }));
 
-function likeButtonHtml(projectId, extraClass = '') {
-    const liked = likedProjects.has(projectId);
-    return `<button type="button" class="like-btn ${extraClass} ${liked ? 'is-liked' : ''}" data-like="${projectId}">
-                <i class="${liked ? 'fa-solid' : 'fa-regular'} fa-thumbs-up"></i>Beğen
-            </button>`;
-}
+window.addEventListener('load', updateLayout);
+window.addEventListener('resize', updateLayout);
+
+scrollContainer.addEventListener('scroll', () => {
+    updateScrollbar();
+    scrollbar.classList.add('is-active');
+    clearTimeout(scrollIdleTimer);
+    scrollIdleTimer = setTimeout(() => scrollbar.classList.remove('is-active'), 800);
+});
+
+scrollThumb.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const startY = e.clientY;
+    const startScroll = scrollContainer.scrollTop;
+    const scrollPerPixel = maxScroll() / (scrollbar.clientHeight - scrollThumb.offsetHeight);
+    const onMove = moveEvent => {
+        scrollContainer.scrollTop = startScroll + (moveEvent.clientY - startY) * scrollPerPixel;
+    };
+
+    scrollContainer.style.scrollBehavior = 'auto';
+    scrollThumb.setPointerCapture(e.pointerId);
+    scrollThumb.addEventListener('pointermove', onMove);
+    scrollThumb.addEventListener('pointerup', () => {
+        scrollContainer.style.scrollBehavior = '';
+        scrollThumb.removeEventListener('pointermove', onMove);
+    }, { once: true });
+});
+
+scrollbar.addEventListener('pointerdown', e => {
+    const rect = scrollbar.getBoundingClientRect();
+    scrollContainer.scrollTo({ top: (e.clientY - rect.top) / rect.height * maxScroll() });
+});
+
+const statsObserver = new IntersectionObserver(([entry]) => {
+    if (!entry.isIntersecting) return;
+
+    statsObserver.disconnect();
+    document.querySelectorAll('.stat-number').forEach(counter => {
+        const target = +counter.dataset.target;
+        let value = 0;
+        const timer = setInterval(() => {
+            value = Math.min(value + target / 70, target);
+            counter.textContent = Math.ceil(value);
+            if (value === target) clearInterval(timer);
+        }, 15);
+    });
+}, { threshold: 1 });
+
+statsObserver.observe(document.querySelector('#stats'));
+
+const projectsById = {};
+CATEGORIES.forEach(category => category.projects.forEach(project => {
+    projectsById[project.id] = { project, category };
+}));
+
+const likedProjects = new Set();
+try {
+    JSON.parse(localStorage.getItem('likes') || '[]').forEach(id => likedProjects.add(id));
+} catch (e) {}
 
 function toggleLike(projectId) {
     const liked = !likedProjects.has(projectId);
 
-    if (liked) {
-        likedProjects.add(projectId);
-    } else {
-        likedProjects.delete(projectId);
-    }
+    if (liked) likedProjects.add(projectId);
+    else likedProjects.delete(projectId);
 
     try {
-        if (liked) {
-            localStorage.setItem(`like-${projectId}`, '1');
-        } else {
-            localStorage.removeItem(`like-${projectId}`);
-        }
+        localStorage.setItem('likes', JSON.stringify([...likedProjects]));
     } catch (e) {}
 
-    document.querySelectorAll(`[data-like="${projectId}"]`).forEach(button => {
-        button.classList.toggle('is-liked', liked);
-        button.querySelector('i').className = `${liked ? 'fa-solid' : 'fa-regular'} fa-thumbs-up`;
-    });
+    document.querySelectorAll(`[data-like="${projectId}"]`).forEach(button => button.classList.toggle('is-liked', liked));
+}
+
+function likeButtonHtml(projectId, extraClass = '') {
+    return `<button type="button" class="like-btn ${extraClass} ${likedProjects.has(projectId) ? 'is-liked' : ''}" data-like="${projectId}">
+                <i class="fa-regular fa-thumbs-up"></i>Beğen
+            </button>`;
+}
+
+function statusHtml(statusKey) {
+    const status = STATUSES[statusKey];
+    return `<div class="project-status"><span class="status-dot ${status.color}"></span>${status.label}</div>`;
 }
 
 function projectCardHtml(project) {
-    const status = STATUSES[project.status];
     return `
         <div class="project-card" data-project="${project.id}" tabindex="0">
             <div class="card-content">
                 <div class="project-title">${project.title}</div>
-                <div class="project-status">
-                    <span class="status-dot ${status.color}"></span>${status.label}
-                </div>
+                ${statusHtml(project.status)}
             </div>
             <div class="card-logo"><i class="${project.icon}"></i></div>
             <div class="card-actions">${likeButtonHtml(project.id)}</div>
         </div>`;
 }
 
-document.querySelectorAll('.project-grid[data-category]').forEach(grid => {
-    const category = CATEGORIES.find(c => c.id === grid.dataset.category);
-    if (!category) return;
+document.querySelector('.categories').innerHTML = CATEGORIES.map(category => `
+    <section class="category">
+        <h3>${category.title}</h3>
+        <div class="project-grid ${category.locked ? 'is-locked' : ''}">
+            ${category.projects.slice(0, 3).map(projectCardHtml).join('')}
+            <button type="button" class="project-card more-card" data-more="${category.id}">
+                <i class="fa-solid fa-plus"></i>
+                <span>Daha fazla gör</span>
+            </button>
+            ${category.locked ? '<div class="locked-overlay">Yükleniyor...</div>' : ''}
+        </div>
+    </section>`).join('');
 
-    grid.innerHTML = category.projects.slice(0, 3).map(projectCardHtml).join('') + `
-        <button type="button" class="project-card more-card" data-more="${category.id}">
-            <i class="fa-solid fa-plus"></i>
-            <span>Daha fazla gör</span>
-        </button>`;
-
-    if (category.locked) {
-        grid.classList.add('is-locked');
-        grid.querySelectorAll('.project-card').forEach(card => card.inert = true);
-        grid.insertAdjacentHTML('beforeend', '<div class="locked-overlay">Yükleniyor...</div>');
-    }
-});
+document.querySelectorAll('.is-locked .project-card').forEach(card => card.inert = true);
 
 const modal = document.querySelector('.modal');
 const modalTitle = modal.querySelector('.modal-title');
 const modalBody = modal.querySelector('.modal-body');
-
 let modalHistory = [];
 let focusBeforeModal = null;
 
-function openView(view) {
+function openView(render, id) {
     if (modalHistory.length) {
-        modalHistory[modalHistory.length - 1].scroll = modalBody.scrollTop;
+        modalHistory.at(-1).scroll = modalBody.scrollTop;
     } else {
         focusBeforeModal = document.activeElement;
         modal.hidden = false;
     }
 
-    modalHistory.push(view);
-    showView(view);
+    modalHistory.push({ render, id });
+    showView(modalHistory.at(-1));
     modal.querySelector('.modal-close').focus();
 }
 
 function showView(view) {
-    if (view.type === 'project') {
-        renderProjectView(view.id);
-    } else {
-        renderCategoryView(view.id);
-    }
+    view.render(view.id);
     modalBody.scrollTop = view.scroll || 0;
 }
 
 function goBack() {
     modalHistory.pop();
 
-    if (modalHistory.length) {
-        showView(modalHistory[modalHistory.length - 1]);
-    } else {
-        closeModal();
-    }
+    if (modalHistory.length) showView(modalHistory.at(-1));
+    else closeModal();
 }
 
 function closeModal() {
@@ -274,110 +214,86 @@ function renderCategoryView(categoryId) {
     modalTitle.textContent = category.title;
 
     modalBody.innerHTML = `
-        <div class="category-page">
-            <h3 class="modal-heading">${category.title}</h3>
-            <p class="modal-subheading">Bu kategorideki ${category.projects.length} projenin tamamı</p>
-            <div class="project-grid">${category.projects.map(projectCardHtml).join('')}</div>
-        </div>`;
+        <h3 class="modal-heading">${category.title}</h3>
+        <p class="modal-subheading">Bu kategorideki ${category.projects.length} projenin tamamı</p>
+        <div class="project-grid">${category.projects.map(projectCardHtml).join('')}</div>`;
 }
 
 function renderProjectView(projectId) {
-    const { project, category } = findProject(projectId);
-    const status = STATUSES[project.status];
+    const { project, category } = projectsById[projectId];
     modalTitle.textContent = category.title;
 
     const slides = project.images.length
         ? project.images.map((src, i) => `<img src="${src}" alt="${project.title} ekran görüntüsü ${i + 1}">`)
-        : [1, 2, 3].map(n => `
-            <div class="gallery-placeholder">
-                <i class="${project.icon}"></i>
-                <span>Ekran görüntüsü ${n}</span>
-            </div>`);
+        : [1, 2, 3].map(n => `<div class="gallery-placeholder"><i class="${project.icon}"></i><span>Ekran görüntüsü ${n}</span></div>`);
 
     modalBody.innerHTML = `
-        <div class="product">
-            <div class="product-top">
-                <div class="product-gallery">
-                    <div class="gallery-main">
-                        ${slides.map((slide, i) => `<div class="gallery-slide ${i === 0 ? 'is-active' : ''}">${slide}</div>`).join('')}
-                        <button type="button" class="gallery-nav prev" aria-label="Önceki görsel"><i class="fa-solid fa-chevron-left"></i></button>
-                        <button type="button" class="gallery-nav next" aria-label="Sonraki görsel"><i class="fa-solid fa-chevron-right"></i></button>
-                    </div>
-                    <div class="gallery-thumbs">
-                        ${slides.map((slide, i) => `<button type="button" class="gallery-thumb ${i === 0 ? 'is-active' : ''}" data-slide="${i}" aria-label="Görsel ${i + 1}">${slide}</button>`).join('')}
-                    </div>
+        <div class="product-top">
+            <div>
+                <div class="gallery-main">
+                    ${slides.map((slide, i) => `<div class="gallery-slide ${i === 0 ? 'is-active' : ''}">${slide}</div>`).join('')}
+                    <button type="button" class="gallery-nav prev" aria-label="Önceki görsel"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button type="button" class="gallery-nav next" aria-label="Sonraki görsel"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
-
-                <div class="product-info">
-                    <span class="product-category">${category.title}</span>
-                    <h2 class="product-title">${project.title}</h2>
-                    <div class="project-status">
-                        <span class="status-dot ${status.color}"></span>${status.label}
-                    </div>
-                    <p class="product-summary">${project.summary}</p>
-                    <ul class="product-features">
-                        ${project.features.map(f => `<li><i class="fa-solid fa-check"></i>${f}</li>`).join('')}
-                    </ul>
-                    <div class="product-actions">
-                        <button type="button" class="quote-btn" data-quote><i class="fa-solid fa-tag"></i>Fiyat Al</button>
-                        ${likeButtonHtml(project.id, 'like-btn-large')}
-                    </div>
+                <div class="gallery-thumbs">
+                    ${slides.map((slide, i) => `<button type="button" class="gallery-thumb ${i === 0 ? 'is-active' : ''}" aria-label="Görsel ${i + 1}">${slide}</button>`).join('')}
                 </div>
             </div>
 
-            <div class="product-section">
-                <h4 class="modal-section-title">Açıklama</h4>
-                ${project.description.map(paragraph => `<p>${paragraph}</p>`).join('')}
+            <div class="product-info">
+                <span class="product-category">${category.title}</span>
+                <h2 class="product-title">${project.title}</h2>
+                ${statusHtml(project.status)}
+                <p class="product-summary">${project.summary}</p>
+                <ul class="product-features">
+                    ${project.features.map(feature => `<li><i class="fa-solid fa-check"></i>${feature}</li>`).join('')}
+                </ul>
+                <div class="product-actions">
+                    <button type="button" class="info-btn" data-info><i class="fa-solid fa-circle-info"></i>Bilgi Al</button>
+                    ${likeButtonHtml(project.id, 'like-btn-large')}
+                </div>
             </div>
+        </div>
+
+        <div class="product-section">
+            <h4 class="modal-section-title">Açıklama</h4>
+            ${project.description.map(paragraph => `<p>${paragraph}</p>`).join('')}
         </div>`;
 
-    setupGallery();
-}
-
-function setupGallery() {
-    const slides = modalBody.querySelectorAll('.gallery-slide');
+    const slideElements = modalBody.querySelectorAll('.gallery-slide');
     const thumbs = modalBody.querySelectorAll('.gallery-thumb');
     let current = 0;
 
     function showSlide(index) {
-        current = (index + slides.length) % slides.length;
-        slides.forEach((slide, i) => slide.classList.toggle('is-active', i === current));
+        current = (index + slideElements.length) % slideElements.length;
+        slideElements.forEach((slide, i) => slide.classList.toggle('is-active', i === current));
         thumbs.forEach((thumb, i) => thumb.classList.toggle('is-active', i === current));
     }
 
     modalBody.querySelector('.gallery-nav.prev').addEventListener('click', () => showSlide(current - 1));
     modalBody.querySelector('.gallery-nav.next').addEventListener('click', () => showSlide(current + 1));
-    thumbs.forEach(thumb => thumb.addEventListener('click', () => showSlide(+thumb.dataset.slide)));
+    thumbs.forEach((thumb, i) => thumb.addEventListener('click', () => showSlide(i)));
 }
 
 document.addEventListener('click', e => {
-    const likeButton = e.target.closest('[data-like]');
-    if (likeButton) {
-        toggleLike(likeButton.dataset.like);
-        return;
-    }
+    const target = e.target.closest('[data-like], [data-project], [data-more], [data-info]');
+    if (!target) return;
 
-    const card = e.target.closest('[data-project]');
-    if (card) {
-        openView({ type: 'project', id: card.dataset.project });
-        return;
-    }
-
-    const moreCard = e.target.closest('[data-more]');
-    if (moreCard) {
-        openView({ type: 'category', id: moreCard.dataset.more });
-        return;
-    }
-
-    if (e.target.closest('[data-quote]')) {
+    if (target.dataset.like) {
+        toggleLike(target.dataset.like);
+    } else if (target.dataset.project) {
+        openView(renderProjectView, target.dataset.project);
+    } else if (target.dataset.more) {
+        openView(renderCategoryView, target.dataset.more);
+    } else {
         closeModal();
-        document.querySelector('#contact').scrollIntoView({ behavior: 'smooth' });
+        smoothScrollTo(document.querySelector('#contact'));
     }
 });
 
 document.addEventListener('keydown', e => {
     if (e.key === 'Enter' && e.target.matches('[data-project]')) {
-        openView({ type: 'project', id: e.target.dataset.project });
+        openView(renderProjectView, e.target.dataset.project);
     }
 
     if (e.key === 'Escape' && !modal.hidden) {
