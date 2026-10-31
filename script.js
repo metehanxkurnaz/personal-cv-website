@@ -152,6 +152,18 @@ function statusHtml(statusKey) {
     return `<div class="project-status"><span class="status-dot ${status.color}"></span>${status.label}</div>`;
 }
 
+function formatText(text) {
+    const link = (label, url) => `<a href="${url}" target="_blank" rel="noopener">${label}</a>`;
+
+    return text
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (_, label, url) => link(label, url))
+        .replace(/(^|[\s(])(https?:\/\/[^\s<]+)/g, (_, before, url) => before + link(url, url))
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/\n/g, '<br>');
+}
+
 function projectCardHtml(project) {
     return `
         <div class="project-card" data-project="${project.id}" tabindex="0">
@@ -182,6 +194,7 @@ document.querySelectorAll('.is-locked .project-card').forEach(card => card.inert
 const modal = document.querySelector('.modal');
 const modalTitle = modal.querySelector('.modal-title');
 const modalBody = modal.querySelector('.modal-body');
+const whatsappUrl = document.querySelector('#contact a[href*="wa.me"]').href;
 let modalHistory = [];
 let focusBeforeModal = null;
 
@@ -252,21 +265,21 @@ function renderProjectView(projectId) {
                 <span class="product-category">${category.title}</span>
                 <h2 class="product-title">${project.title}</h2>
                 ${statusHtml(project.status)}
-                <p class="product-summary">${project.summary}</p>
-                <ul class="product-features">
-                    ${project.features.map(feature => `<li><i class="fa-solid fa-check"></i>${feature}</li>`).join('')}
-                </ul>
+                ${project.summary ? `<p class="product-summary">${formatText(project.summary)}</p>` : ''}
+                ${project.features.length ? `<ul class="product-features">
+                    ${project.features.map(feature => `<li><i class="fa-solid fa-check"></i>${formatText(feature)}</li>`).join('')}
+                </ul>` : ''}
                 <div class="product-actions">
-                    <button type="button" class="info-btn" data-info><i class="fa-solid fa-circle-info"></i>Bilgi Al</button>
+                    <a class="info-btn" href="${whatsappUrl}?text=${encodeURIComponent(`Merhaba, "${project.title}" hakkında bilgi almak istiyorum.`)}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i>Bilgi Al</a>
                     ${likeButtonHtml(project.id, 'like-btn-large')}
                 </div>
             </div>
         </div>
 
-        <div class="product-section">
+        ${project.description.length ? `<div class="product-section">
             <h4 class="modal-section-title">Açıklama</h4>
-            ${project.description.map(paragraph => `<p>${paragraph}</p>`).join('')}
-        </div>`;
+            ${project.description.map(paragraph => `<p>${formatText(paragraph)}</p>`).join('')}
+        </div>` : ''}`;
 
     const slideElements = modalBody.querySelectorAll('.gallery-slide');
     const thumbs = modalBody.querySelectorAll('.gallery-thumb');
@@ -284,18 +297,15 @@ function renderProjectView(projectId) {
 }
 
 document.addEventListener('click', e => {
-    const target = e.target.closest('[data-like], [data-project], [data-more], [data-info]');
+    const target = e.target.closest('[data-like], [data-project], [data-more]');
     if (!target) return;
 
     if (target.dataset.like) {
         toggleLike(target.dataset.like);
     } else if (target.dataset.project) {
         openView(renderProjectView, target.dataset.project);
-    } else if (target.dataset.more) {
-        openView(renderCategoryView, target.dataset.more);
     } else {
-        closeModal();
-        smoothScrollTo(document.querySelector('#contact'));
+        openView(renderCategoryView, target.dataset.more);
     }
 });
 

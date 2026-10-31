@@ -656,6 +656,22 @@ body::before {
     margin-bottom: 16px;
 }
 
+.modal-body strong {
+    color: #ffffff;
+}
+
+.modal-body p a,
+.product-features a {
+    color: var(--accent);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+}
+
+.modal-body p a:hover,
+.product-features a:hover {
+    text-decoration: underline;
+}
+
 .modal-body .modal-subheading {
     color: #808080;
     margin-bottom: 28px;
@@ -809,6 +825,7 @@ body::before {
     color: var(--accent);
     font-size: 16px;
     font-weight: 600;
+    text-decoration: none;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
 }

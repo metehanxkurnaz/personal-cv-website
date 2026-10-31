@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Proje Yönetimi</title>
+    <link rel="icon" type="image/svg+xml" href="logo.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body.admin {
+            display: block;
+            height: auto;
+            min-height: 100vh;
+            overflow: auto;
+        }
+
+        .admin input,
+        .admin select,
+        .admin textarea {
+            width: 100%;
+            background-color: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 11px 14px;
+            color: var(--text);
+            font-size: 15px;
+            transition: border-color 0.2s;
+        }
+
+        .admin textarea {
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .admin input:focus,
+        .admin select:focus,
+        .admin textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .admin .info-btn {
+            flex: none;
+            padding: 11px 20px;
+            font-size: 15px;
+        }
+
+        .muted {
+            color: #808080;
+            font-size: 14px;
+        }
+
+        .admin-bar {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 32px;
+            background-color: rgba(30, 30, 30, 0.92);
+            border-bottom: 1px solid #2b2b2b;
+        }
+
+        .admin-bar-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .admin [hidden] {
+            display: none !important;
+        }
+
+        .save-state {
+            font-size: 13px;
+            color: #808080;
+        }
+
+        .save-state.is-saved {
+            color: #4CAF50;
+        }
+
+        .save-state.is-dirty {
+            color: #FFC107;
+        }
+
+        .folder-btn.is-connected {
+            color: #4CAF50;
+            border-color: #4CAF50;
+            background: none;
+            cursor: default;
+        }
+
+        .admin-layout {
+            position: relative;
+            display: grid;
+            grid-template-columns: 270px minmax(0, 1fr);
+            gap: 32px;
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 32px;
+        }
+
+        .category-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 16px;
+        }
+
+        .category-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            background: none;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            color: var(--muted);
+            font-size: 15px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .category-item:hover {
+            background-color: var(--surface);
+            color: #ffffff;
+        }
+
+        .category-item.is-active {
+            background-color: var(--surface);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .category-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--mono);
+            font-size: 13px;
+            color: #808080;
+        }
+
+        .list-head,
+        .editor-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .list-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .switch {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--muted);
+            cursor: pointer;
+        }
+
+        .switch input {
+            display: none;
+        }
+
+        .switch-track {
+            position: relative;
+            width: 40px;
+            height: 22px;
+            border-radius: 11px;
+            background-color: #3c3c3c;
+            transition: background-color 0.2s;
+        }
+
+        .switch-track::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            transition: transform 0.2s;
+        }
+
+        .switch input:checked + .switch-track {
+            background-color: #4CAF50;
+        }
+
+        .switch input:checked + .switch-track::after {
+            transform: translateX(18px);
+        }
+
+        .product-table {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .product-row {
+            display: grid;
+            grid-template-columns: 64px minmax(0, 1fr) 150px 110px auto;
+            align-items: center;
+            gap: 18px;
+            padding: 14px 18px;
+            background-color: var(--surface);
+            border-bottom: 1px solid #2b2b2b;
+        }
+
+        .product-row:last-child {
+            border-bottom: none;
+        }
+
+        .row-thumb {
+            width: 64px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background-color: var(--bg);
+            color: rgba(127, 220, 251, 0.5);
+            font-size: 20px;
+            overflow: hidden;
+        }
+
+        .row-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .row-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .row-info strong {
+            color: #ffffff;
+            font-size: 16px;
+        }
+
+        .row-info:hover strong {
+            color: var(--accent);
+        }
+
+        .home-badge {
+            justify-self: start;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background-color: rgba(127, 220, 251, 0.1);
+            color: var(--accent);
+            font-size: 12px;
+        }
+
+        .home-badge.is-hidden {
+            visibility: hidden;
+        }
+
+        .row-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover:not(:disabled) {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .icon-btn.danger:hover:not(:disabled) {
+            color: #F44336;
+            border-color: #F44336;
+        }
+
+        .icon-btn:disabled {
+            opacity: 0.3;
+            cursor: default;
+        }
+
+        .empty-state {
+            padding: 60px 20px;
+            text-align: center;
+            border: 1px dashed #3c3c3c;
+            border-radius: 12px;
+            color: #808080;
+        }
+
+        .empty-state i {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .back-link:hover {
+            color: var(--accent);
+        }
+
+        .editor-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 380px;
+            gap: 32px;
+            align-items: start;
+        }
+
+        .editor-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-card {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 24px;
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .form-card .modal-section-title {
+            margin-bottom: 0;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .field small {
+            color: #707070;
+            font-size: 12px;
+        }
+
+        .required {
+            color: var(--orange);
+        }
+
+        .field-error {
+            color: #F44336;
+            font-size: 13px;
+        }
+
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+            gap: 8px;
+        }
+
+        .icon-choice {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--muted);
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .icon-choice:hover,
+        .icon-choice.is-selected {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .icon-choice.is-selected {
+            background-color: rgba(127, 220, 251, 0.1);
+        }
+
+        .drop-zone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 30px 20px;
+            border: 2px dashed #3c3c3c;
+            border-radius: 12px;
+            color: var(--muted);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .drop-zone i {
+            font-size: 30px;
+            color: var(--accent);
+        }
+
+        .drop-zone:hover,
+        .drop-zone.is-over {
+            border-color: var(--accent);
+            background-color: rgba(127, 220, 251, 0.04);
+        }
+
+        .drop-zone input {
+            display: none;
+        }
+
+        .image-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+        }
+
+        .image-item {
+            position: relative;
+            aspect-ratio: 16 / 10;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: var(--bg);
+        }
+
+        .image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-item .cover-badge {
+            position: absolute;
+            left: 6px;
+            bottom: 6px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background-color: var(--accent);
+            color: var(--bg);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .image-item .icon-btn {
+            position: absolute;
+            top: 6px;
+            width: 28px;
+            height: 28px;
+            font-size: 12px;
+            background-color: rgba(30, 30, 30, 0.85);
+        }
+
+        .image-item .remove-image {
+            right: 6px;
+        }
+
+        .image-item .first-image {
+            right: 40px;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .feature-item {
+            display: flex;
+            gap: 10px;
+        }
+
+        .add-feature {
+            align-self: flex-start;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .preview-sticky {
+            position: sticky;
+            top: 90px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .preview-product {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 16px;
+            background-color: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .preview-product .gallery-main img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-product .product-title {
+            font-size: 22px;
+        }
+
+        .preview-product .product-summary {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .preview-product .product-features {
+            font-size: 13px;
+        }
+
+        .preview-product .modal-section-title {
+            margin: 8px 0 0;
+            font-size: 14px;
+        }
+
+        .preview-description p {
+            font-size: 14px;
+            line-height: 1.7;
+            text-align: justify;
+            margin-bottom: 10px;
+        }
+
+        .preview-product strong {
+            color: #ffffff;
+        }
+
+        .preview-product a {
+            color: var(--accent);
+            text-decoration: none;
+            overflow-wrap: anywhere;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            z-index: 10;
+            padding: 12px 22px;
+            border-radius: 10px;
+            background-color: #4CAF50;
+            color: #ffffff;
+            font-weight: 600;
+            transform: translate(-50%, 120px);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.is-visible {
+            transform: translate(-50%, 0);
+        }
+
+        .toast.is-error {
+            background-color: #F44336;
+        }
+
+        @media (max-width: 1100px) {
+            .editor-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .preview-sticky {
+                position: static;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .admin-layout {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+
+            .admin-bar {
+                padding: 12px 20px;
+            }
+
+            .save-state {
+                display: none;
+            }
+
+            .product-row {
+                grid-template-columns: 52px minmax(0, 1fr) auto;
+            }
+
+            .product-row .project-status,
+            .home-badge {
+                display: none;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="admin">
+    <header class="admin-bar">
+        <a href="index.html" target="_blank" class="brand">
+            <img src="logo.svg" alt="" class="brand-logo">
+            <span class="brand-name">Proje Yönetimi</span>
+        </a>
+        <div class="admin-bar-actions">
+            <span class="save-state"></span>
+            <button type="button" class="like-btn like-btn-large folder-btn" data-action="connect" hidden></button>
+            <button type="button" class="info-btn" data-action="download"><i class="fa-solid fa-download"></i>projects.js'yi indir</button>
+        </div>
+    </header>
+
+    <div class="admin-layout">
+        <aside>
+            <h2 class="modal-section-title">Kategoriler</h2>
+            <nav class="category-list"></nav>
+        </aside>
+        <main class="admin-main"></main>
+    </div>
+
+    <div class="toast"></div>
+
+    <script src="projects.js"></script>
+    <script>
+        const ICONS = [
+            'fa-solid fa-code', 'fa-solid fa-laptop-code', 'fa-brands fa-html5', 'fa-brands fa-css3-alt',
+            'fa-brands fa-js', 'fa-brands fa-wordpress', 'fa-solid fa-palette', 'fa-solid fa-mobile-screen',
+            'fa-solid fa-globe', 'fa-solid fa-gears', 'fa-solid fa-robot', 'fa-solid fa-bolt',
+            'fa-solid fa-table', 'fa-solid fa-clock', 'fa-solid fa-envelope-open-text', 'fa-brands fa-python',
+            'fa-brands fa-telegram', 'fa-brands fa-discord', 'fa-solid fa-brain', 'fa-solid fa-wand-magic-sparkles',
+            'fa-solid fa-comments', 'fa-solid fa-image', 'fa-solid fa-microchip', 'fa-solid fa-chart-line',
+            'fa-solid fa-database', 'fa-solid fa-server', 'fa-solid fa-shield-halved', 'fa-solid fa-cart-shopping',
+            'fa-solid fa-store', 'fa-brands fa-shopify', 'fa-solid fa-credit-card', 'fa-solid fa-box',
+            'fa-solid fa-gamepad', 'fa-brands fa-unity', 'fa-solid fa-dice-d20', 'fa-brands fa-steam'
+        ];
+
+        const categories = JSON.parse(JSON.stringify(CATEGORIES));
+        const main = document.querySelector('.admin-main');
+        const categoryList = document.querySelector('.category-list');
+        const saveState = document.querySelector('.save-state');
+        const folderButton = document.querySelector('.folder-btn');
+        const downloadButton = document.querySelector('[data-action="download"]');
+        const toast = document.querySelector('.toast');
+        const supportsFolder = 'showDirectoryPicker' in window;
+        const imagePreviews = {};
+        const pendingFiles = {};
+        let currentCategoryId = categories[0].id;
+        let draft = null;
+        let formChanged = false;
+        let dirty = false;
+        let folder = null;
+        let storedFolder = null;
+        let toastTimer;
+
+        const findCategory = id => categories.find(category => category.id === id);
+
+        function escapeHtml(text) {
+            return String(text).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
+        }
+
+        function formatText(text) {
+            const link = (label, url) => `<a href="${url}" target="_blank" rel="noopener">${label}</a>`;
+
+            return escapeHtml(text)
+                .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (_, label, url) => link(label, url))
+                .replace(/(^|[\s(])(https?:\/\/[^\s<]+)/g, (_, before, url) => before + link(url, url))
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                .replace(/\n/g, '<br>');
+        }
+
+        function imageSrc(path) {
+            return imagePreviews[path] || path;
+        }
+
+        function setDirty(value) {
+            dirty = value;
+            renderSaveState();
+        }
+
+        function renderSaveState() {
+            saveState.classList.toggle('is-dirty', dirty);
+            saveState.classList.toggle('is-saved', !dirty && !!folder);
+            saveState.textContent = dirty
+                ? (folder ? 'Kaydediliyor...' : 'İndirilmemiş değişiklikler var')
+                : (folder ? 'Tüm değişiklikler klasöre kaydedildi' : '');
+
+            folderButton.hidden = !supportsFolder;
+            folderButton.classList.toggle('is-connected', !!folder);
+            folderButton.innerHTML = folder
+                ? `<i class="fa-solid fa-circle-check"></i>${escapeHtml(folder.name)} bağlı`
+                : `<i class="fa-regular fa-folder-open"></i>${storedFolder ? `${escapeHtml(storedFolder.name)} klasörüne bağlan` : 'Site klasörünü bağla'}`;
+            downloadButton.hidden = !!folder;
+        }
+
+        function showToast(message, isError = false) {
+            toast.textContent = message;
+            toast.classList.toggle('is-error', isError);
+            toast.classList.add('is-visible');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('is-visible'), isError ? 4000 : 2200);
+        }
+
+        function folderStore(mode, action) {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('project-admin', 1);
+                request.onupgradeneeded = () => request.result.createObjectStore('handles');
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    const transaction = request.result.transaction('handles', mode);
+                    const result = action(transaction.objectStore('handles'));
+                    transaction.oncomplete = () => resolve(result.result);
+                    transaction.onerror = () => reject(transaction.error);
+                };
+            });
+        }
+
+        async function connectFolder(handle) {
+            try {
+                handle = handle || await showDirectoryPicker({ id: 'site', mode: 'readwrite' });
+                if (await handle.requestPermission({ mode: 'readwrite' }) !== 'granted') return;
+                await handle.getFileHandle('projects.js');
+
+                folder = handle;
+                storedFolder = handle;
+                folderStore('readwrite', store => store.put(handle, 'folder')).catch(() => {});
+                renderSaveState();
+
+                if (dirty) await writeToFolder();
+                showToast('Klasör bağlandı, değişiklikler artık doğrudan kaydedilecek');
+            } catch (error) {
+                if (error.name === 'NotFoundError') showToast('Bu klasörde projects.js yok. Sitenin klasörünü seç.', true);
+                else if (error.name !== 'AbortError') showToast('Klasöre bağlanılamadı', true);
+            }
+        }
+
+        async function writeFile(directory, name, content) {
+            const writable = await (await directory.getFileHandle(name, { create: true })).createWritable();
+            await writable.write(content);
+            await writable.close();
+        }
+
+        async function writeToFolder() {
+            try {
+                const usedImages = new Set(categories.flatMap(category => category.projects.flatMap(project => project.images)));
+
+                for (const [path, file] of Object.entries(pendingFiles)) {
+                    if (!usedImages.has(path)) continue;
+                    const images = await folder.getDirectoryHandle('images', { create: true });
+                    await writeFile(images, path.replace('images/', ''), file);
+                    delete pendingFiles[path];
+                }
+
+                await writeFile(folder, 'projects.js', projectsFileContent());
+                setDirty(false);
+                return true;
+            } catch (error) {
+                showToast('Klasöre yazılamadı. Klasörü yeniden bağlamayı dene.', true);
+                return false;
+            }
+        }
+
+        async function persist(message) {
+            setDirty(true);
+
+            if (!folder) {
+                if (message) showToast(message);
+                return;
+            }
+
+            if (await writeToFolder() && message) showToast(`${message} ve klasöre yazıldı`);
+        }
+
+        function slugify(text) {
+            const map = { ç: 'c', ğ: 'g', ı: 'i', ö: 'o', ş: 's', ü: 'u' };
+            return text.toLocaleLowerCase('tr')
+                .replace(/[çğıöşü]/g, ch => map[ch])
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '') || 'proje';
+        }
+
+        function uniqueId(title) {
+            const ids = new Set(categories.flatMap(category => category.projects.map(project => project.id)));
+            const base = slugify(title);
+            let id = base;
+            for (let n = 2; ids.has(id); n++) id = `${base}-${n}`;
+            return id;
+        }
+
+        function statusHtml(statusKey) {
+            const status = STATUSES[statusKey];
+            return `<div class="project-status"><span class="status-dot ${status.color}"></span>${status.label}</div>`;
+        }
+
+        function renderSidebar() {
+            categoryList.innerHTML = categories.map(category => `
+                <button type="button" class="category-item ${category.id === currentCategoryId ? 'is-active' : ''}" data-action="category" data-id="${category.id}">
+                    <span>${escapeHtml(category.title)}</span>
+                    <span class="category-meta">
+                        ${category.locked ? '<i class="fa-solid fa-lock" title="Sitede gizli"></i>' : ''}
+                        ${category.projects.length}
+                    </span>
+                </button>`).join('');
+        }
+
+        function rowHtml(project, index, total) {
+            const cover = project.images[0];
+            return `
+                <div class="product-row">
+                    <div class="row-thumb">${cover ? `<img src="${escapeHtml(imageSrc(cover))}" alt="">` : `<i class="${escapeHtml(project.icon)}"></i>`}</div>
+                    <div class="row-info" data-action="edit" data-id="${project.id}">
+                        <strong>${escapeHtml(project.title)}</strong>
+                        <span class="muted">${project.images.length} görsel · ${project.features.length} özellik</span>
+                    </div>
+                    ${statusHtml(project.status)}
+                    <span class="home-badge ${index < 3 ? '' : 'is-hidden'}">Ana sayfada</span>
+                    <div class="row-actions">
+                        <button type="button" class="icon-btn" data-action="up" data-id="${project.id}" title="Yukarı taşı" ${index === 0 ? 'disabled' : ''}><i class="fa-solid fa-arrow-up"></i></button>
+                        <button type="button" class="icon-btn" data-action="down" data-id="${project.id}" title="Aşağı taşı" ${index === total - 1 ? 'disabled' : ''}><i class="fa-solid fa-arrow-down"></i></button>
+                        <button type="button" class="icon-btn" data-action="edit" data-id="${project.id}" title="Düzenle"><i class="fa-solid fa-pen"></i></button>
+                        <button type="button" class="icon-btn danger" data-action="delete" data-id="${project.id}" title="Sil"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+                </div>`;
+        }
+
+        function renderList() {
+            draft = null;
+            const category = findCategory(currentCategoryId);
+            const projects = category.projects;
+
+            main.innerHTML = `
+                <div class="list-head">
+                    <div>
+                        <h1 class="modal-heading">${escapeHtml(category.title)}</h1>
+                        <p class="muted">${projects.length} proje · Sıralamadaki ilk 3 proje ana sayfada görünür</p>
+                    </div>
+                    <div class="list-actions">
+                        <label class="switch">
+                            <input type="checkbox" data-action="toggle-lock" ${category.locked ? '' : 'checked'}>
+                            <span class="switch-track"></span>
+                            <span>${category.locked ? 'Sitede gizli (Yükleniyor...)' : 'Sitede yayında'}</span>
+                        </label>
+                        <button type="button" class="info-btn" data-action="new"><i class="fa-solid fa-plus"></i>Yeni Proje</button>
+                    </div>
+                </div>
+                ${projects.length
+                    ? `<div class="product-table">${projects.map((project, i) => rowHtml(project, i, projects.length)).join('')}</div>`
+                    : `<div class="empty-state"><i class="fa-regular fa-folder-open"></i><p>Bu kategoride henüz proje yok.</p></div>`}`;
+
+            renderSidebar();
+            window.scrollTo(0, 0);
+        }
+
+        function openEditor(project) {
+            draft = project
+                ? { ...JSON.parse(JSON.stringify(project)), categoryId: currentCategoryId, originalCategoryId: currentCategoryId }
+                : { id: null, title: '', icon: ICONS[0], status: 'development', summary: '', description: [], features: [''], images: [], categoryId: currentCategoryId, originalCategoryId: null };
+            formChanged = false;
+            renderEditor();
+        }
+
+        function renderEditor() {
+            main.innerHTML = `
+                <div class="editor-head">
+                    <div>
+                        <button type="button" class="back-link" data-action="back"><i class="fa-solid fa-arrow-left"></i>Proje listesine dön</button>
+                        <h1 class="modal-heading">${draft.originalCategoryId ? 'Projeyi düzenle' : 'Yeni proje'}</h1>
+                    </div>
+                </div>
+
+                <div class="editor-grid">
+                    <form class="editor-form" novalidate>
+                        <section class="form-card">
+                            <h3 class="modal-section-title">Temel bilgiler</h3>
+                            <label class="field"><span>Proje adı <span class="required">*</span></span>
+                                <input type="text" name="projectTitle" maxlength="60" value="${escapeHtml(draft.title)}" placeholder="Örn. Instagram İçerik Botu">
+                                <span class="field-error" hidden>Proje adı boş bırakılamaz.</span>
+                            </label>
+                            <div class="form-row">
+                                <label class="field">Kategori
+                                    <select name="categoryId">
+                                        ${categories.map(c => `<option value="${c.id}" ${c.id === draft.categoryId ? 'selected' : ''}>${escapeHtml(c.title)}</option>`).join('')}
+                                    </select>
+                                </label>
+                                <label class="field">Durum
+                                    <select name="status">
+                                        ${Object.entries(STATUSES).map(([key, s]) => `<option value="${key}" ${key === draft.status ? 'selected' : ''}>${s.label}</option>`).join('')}
+                                    </select>
+                                </label>
+                            </div>
+                        </section>
+
+                        <section class="form-card">
+                            <h3 class="modal-section-title">İkon</h3>
+                            <div class="icon-grid">
+                                ${ICONS.map(icon => `<button type="button" class="icon-choice ${icon === draft.icon ? 'is-selected' : ''}" data-action="pick-icon" data-icon="${icon}"><i class="${icon}"></i></button>`).join('')}
+                            </div>
+                            <label class="field">Veya başka bir ikon
+                                <input type="text" name="icon" value="${escapeHtml(draft.icon)}">
+                                <small>fontawesome.com/icons adresinden ücretsiz bir ikonun kodunu yapıştırabilirsin, örn. fa-solid fa-rocket</small>
+                            </label>
+                        </section>
+
+                        <section class="form-card">
+                            <h3 class="modal-section-title">Ekran görüntüleri</h3>
+                            <label class="drop-zone">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                <strong>Görselleri buraya sürükle veya seçmek için tıkla</strong>
+                                <span class="muted">İlk görsel kapak olur. Dosya adlarında boşluk ve Türkçe karakter kullanma.</span>
+                                <input type="file" name="files" accept="image/*" multiple>
+                            </label>
+                            <div class="image-list"></div>
+                            <p class="muted">Seçtiğin görselleri sitenin <strong>images</strong> klasörüne de aynı adla kopyalamayı unutma.</p>
+                        </section>
+
+                        <section class="form-card">
+                            <h3 class="modal-section-title">Açıklamalar</h3>
+                            <label class="field">Kısa açıklama
+                                <textarea name="summary" rows="3" placeholder="Proje sayfasında başlığın altında görünen 1-2 cümle">${escapeHtml(draft.summary)}</textarea>
+                            </label>
+                            <label class="field">Detaylı açıklama
+                                <textarea name="description" rows="10" placeholder="Projeyi detaylıca anlat">${escapeHtml(draft.description.join('\n\n'))}</textarea>
+                                <small>
+                                    Enter: alt satır · Boş satır: yeni paragraf · **kalın** · *italik* ·
+                                    [Link adı](https://adres.com) · Tek başına yazılan https://... adresleri de tıklanabilir olur
+                                </small>
+                            </label>
+                        </section>
+
+                        <section class="form-card">
+                            <h3 class="modal-section-title">Öne çıkan özellikler</h3>
+                            <div class="feature-list">
+                                ${draft.features.map(feature => featureInputHtml(feature)).join('')}
+                            </div>
+                            <button type="button" class="like-btn add-feature" data-action="add-feature"><i class="fa-solid fa-plus"></i>Özellik ekle</button>
+                        </section>
+
+                        <div class="form-actions">
+                            <button type="button" class="like-btn like-btn-large" data-action="back">Vazgeç</button>
+                            <button type="submit" class="info-btn"><i class="fa-solid fa-check"></i>Projeyi kaydet</button>
+                        </div>
+                    </form>
+
+                    <aside class="preview-sticky">
+                        <h3 class="modal-section-title">Ana sayfa kartı</h3>
+                        <div class="preview-card"></div>
+                        <h3 class="modal-section-title">Proje sayfası</h3>
+                        <div class="preview-product"></div>
+                    </aside>
+                </div>`;
+
+            renderImages();
+            updatePreview();
+            window.scrollTo(0, 0);
+        }
+
+        function featureInputHtml(value = '') {
+            return `
+                <div class="feature-item">
+                    <input type="text" name="feature" value="${escapeHtml(value)}" placeholder="Örn. Tek tıkla kurulum">
+                    <button type="button" class="icon-btn danger" data-action="remove-feature" title="Kaldır"><i class="fa-solid fa-xmark"></i></button>
+                </div>`;
+        }
+
+        function renderImages() {
+            main.querySelector('.image-list').innerHTML = draft.images.map((path, i) => `
+                <div class="image-item">
+                    <img src="${escapeHtml(imageSrc(path))}" alt="${escapeHtml(path)}" title="${escapeHtml(path)}">
+                    ${i === 0 ? '<span class="cover-badge">Kapak</span>' : `<button type="button" class="icon-btn first-image" data-action="first-image" data-index="${i}" title="Kapak yap"><i class="fa-solid fa-star"></i></button>`}
+                    <button type="button" class="icon-btn danger remove-image" data-action="remove-image" data-index="${i}" title="Kaldır"><i class="fa-solid fa-xmark"></i></button>
+                </div>`).join('');
+        }
+
+        function addImages(files) {
+            [...files].filter(file => file.type.startsWith('image/')).forEach(file => {
+                const path = `images/${file.name}`;
+                imagePreviews[path] = URL.createObjectURL(file);
+                pendingFiles[path] = file;
+                if (!draft.images.includes(path)) draft.images.push(path);
+            });
+            formChanged = true;
+            renderImages();
+            updatePreview();
+        }
+
+        function readForm() {
+            const fields = main.querySelector('.editor-form').elements;
+            draft.title = fields.projectTitle.value.trim();
+            draft.categoryId = fields.categoryId.value;
+            draft.status = fields.status.value;
+            draft.icon = fields.icon.value.trim() || ICONS[0];
+            draft.summary = fields.summary.value.trim();
+            draft.description = fields.description.value.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+            draft.features = [...main.querySelectorAll('[name="feature"]')].map(input => input.value.trim()).filter(Boolean);
+        }
+
+        function updatePreview() {
+            readForm();
+            const cover = draft.images[0];
+
+            main.querySelector('.preview-card').innerHTML = `
+                <div class="project-card">
+                    <div class="card-content">
+                        <div class="project-title">${escapeHtml(draft.title || 'Proje adı')}</div>
+                        ${statusHtml(draft.status)}
+                    </div>
+                    <div class="card-logo"><i class="${escapeHtml(draft.icon)}"></i></div>
+                    <div class="card-actions"><span class="like-btn"><i class="fa-regular fa-thumbs-up"></i>Beğen</span></div>
+                </div>`;
+
+            main.querySelector('.preview-product').innerHTML = `
+                <div class="gallery-main">
+                    ${cover ? `<img src="${escapeHtml(imageSrc(cover))}" alt="">` : `<div class="gallery-placeholder"><i class="${escapeHtml(draft.icon)}"></i><span>Ekran görüntüsü yok</span></div>`}
+                </div>
+                <span class="product-category">${escapeHtml(findCategory(draft.categoryId).title)}</span>
+                <h2 class="product-title">${escapeHtml(draft.title || 'Proje adı')}</h2>
+                ${statusHtml(draft.status)}
+                <p class="product-summary">${formatText(draft.summary || 'Kısa açıklama burada görünecek.')}</p>
+                <ul class="product-features">
+                    ${draft.features.map(feature => `<li><i class="fa-solid fa-check"></i>${formatText(feature)}</li>`).join('')}
+                </ul>
+                ${draft.description.length ? `
+                    <h4 class="modal-section-title">Açıklama</h4>
+                    <div class="preview-description">${draft.description.map(p => `<p>${formatText(p)}</p>`).join('')}</div>` : ''}`;
+        }
+
+        function saveProject() {
+            readForm();
+            const titleInput = main.querySelector('[name="projectTitle"]');
+
+            if (!draft.title) {
+                titleInput.nextElementSibling.hidden = false;
+                titleInput.focus();
+                titleInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            const project = {
+                id: draft.id || uniqueId(draft.title),
+                title: draft.title,
+                icon: draft.icon,
+                status: draft.status,
+                summary: draft.summary,
+                description: draft.description,
+                features: draft.features,
+                images: draft.images
+            };
+
+            if (draft.originalCategoryId) {
+                const oldList = findCategory(draft.originalCategoryId).projects;
+                const index = oldList.findIndex(p => p.id === project.id);
+
+                if (draft.originalCategoryId === draft.categoryId) {
+                    oldList[index] = project;
+                } else {
+                    oldList.splice(index, 1);
+                    findCategory(draft.categoryId).projects.push(project);
+                }
+            } else {
+                findCategory(draft.categoryId).projects.push(project);
+            }
+
+            currentCategoryId = draft.categoryId;
+            renderList();
+            persist('Proje kaydedildi');
+        }
+
+        function moveProject(id, step) {
+            const projects = findCategory(currentCategoryId).projects;
+            const index = projects.findIndex(p => p.id === id);
+            [projects[index], projects[index + step]] = [projects[index + step], projects[index]];
+            renderList();
+            persist();
+        }
+
+        function projectsFileContent() {
+            return `const STATUSES = ${JSON.stringify(STATUSES, null, 4)};\n\nconst CATEGORIES = ${JSON.stringify(categories, null, 4)};\n`;
+        }
+
+        function downloadProjects() {
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(new Blob([projectsFileContent()], { type: 'text/javascript;charset=utf-8' }));
+            link.download = 'projects.js';
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+            setDirty(false);
+            showToast('projects.js indirildi');
+        }
+
+        function leaveEditor() {
+            if (!formChanged || confirm('Kaydedilmemiş değişiklikler silinecek. Çıkmak istiyor musun?')) renderList();
+        }
+
+        document.addEventListener('click', e => {
+            const target = e.target.closest('[data-action]');
+            if (!target || target.dataset.action === 'toggle-lock') return;
+
+            const { action, id } = target.dataset;
+            const projects = findCategory(currentCategoryId).projects;
+
+            if (action === 'download') downloadProjects();
+            if (action === 'connect' && !folder) connectFolder(storedFolder);
+            if (action === 'category') {
+                if (draft && formChanged && !confirm('Kaydedilmemiş değişiklikler silinecek. Çıkmak istiyor musun?')) return;
+                currentCategoryId = id;
+                renderList();
+            }
+            if (action === 'new') openEditor(null);
+            if (action === 'edit') openEditor(projects.find(p => p.id === id));
+            if (action === 'back') leaveEditor();
+            if (action === 'up') moveProject(id, -1);
+            if (action === 'down') moveProject(id, 1);
+            if (action === 'delete') {
+                const project = projects.find(p => p.id === id);
+                if (!confirm(`"${project.title}" projesi silinsin mi?`)) return;
+                projects.splice(projects.indexOf(project), 1);
+                renderList();
+                persist('Proje silindi');
+            }
+            if (action === 'pick-icon') {
+                main.querySelector('[name="icon"]').value = target.dataset.icon;
+                main.querySelectorAll('.icon-choice').forEach(btn => btn.classList.toggle('is-selected', btn === target));
+                formChanged = true;
+                updatePreview();
+            }
+            if (action === 'add-feature') {
+                main.querySelector('.feature-list').insertAdjacentHTML('beforeend', featureInputHtml());
+                main.querySelector('.feature-list .feature-item:last-child input').focus();
+            }
+            if (action === 'remove-feature') {
+                target.closest('.feature-item').remove();
+                formChanged = true;
+                updatePreview();
+            }
+            if (action === 'remove-image') {
+                draft.images.splice(+target.dataset.index, 1);
+                formChanged = true;
+                renderImages();
+                updatePreview();
+            }
+            if (action === 'first-image') {
+                draft.images.unshift(...draft.images.splice(+target.dataset.index, 1));
+                formChanged = true;
+                renderImages();
+                updatePreview();
+            }
+        });
+
+        document.addEventListener('change', e => {
+            if (e.target.dataset.action === 'toggle-lock') {
+                const category = findCategory(currentCategoryId);
+                if (e.target.checked) delete category.locked;
+                else category.locked = true;
+                renderList();
+                persist(e.target.checked ? 'Kategori yayına alındı' : 'Kategori gizlendi');
+            }
+            if (e.target.name === 'files') {
+                addImages(e.target.files);
+                e.target.value = '';
+            }
+        });
+
+        document.addEventListener('input', e => {
+            if (!e.target.closest('.editor-form')) return;
+            formChanged = true;
+            if (e.target.name === 'projectTitle') e.target.nextElementSibling.hidden = true;
+            if (e.target.name === 'icon') {
+                main.querySelectorAll('.icon-choice').forEach(btn => btn.classList.toggle('is-selected', btn.dataset.icon === e.target.value.trim()));
+            }
+            updatePreview();
+        });
+
+        document.addEventListener('submit', e => {
+            e.preventDefault();
+            saveProject();
+        });
+
+        ['dragover', 'dragleave', 'drop'].forEach(type => document.addEventListener(type, e => {
+            const zone = e.target.closest?.('.drop-zone');
+            if (!zone) return;
+            e.preventDefault();
+            zone.classList.toggle('is-over', type === 'dragover');
+            if (type === 'drop') addImages(e.dataTransfer.files);
+        }));
+
+        window.addEventListener('beforeunload', e => {
+            if (dirty) e.preventDefault();
+        });
+
+        renderList();
+        renderSaveState();
+
+        if (supportsFolder) {
+            folderStore('readonly', store => store.get('folder'))
+                .then(async handle => {
+                    if (!handle) return;
+                    storedFolder = handle;
+                    if (await handle.queryPermission({ mode: 'readwrite' }) === 'granted') folder = handle;
+                    renderSaveState();
+                })
+                .catch(() => {});
+        }
+    </script>
+</body>
+</html>
