@@ -61,6 +61,14 @@ document.querySelectorAll('a[href^="#"]:not([href="#"])').forEach(link => link.a
 window.addEventListener('load', updateLayout);
 window.addEventListener('resize', updateLayout);
 
+fetch('https://api.github.com/repos/metehanxkurnaz/personal-cv-website/commits?per_page=1')
+    .then(response => response.json())
+    .then(([latest]) => {
+        const date = new Date(latest.commit.committer.date).toLocaleDateString('tr-TR');
+        document.querySelector('.last-update').textContent = `Son Güncelleme: ${date}`;
+    })
+    .catch(() => {});
+
 scrollContainer.addEventListener('scroll', () => {
     updateScrollbar();
     scrollbar.classList.add('is-active');
